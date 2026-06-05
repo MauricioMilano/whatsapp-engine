@@ -92,6 +92,47 @@ async function sendTemplate(to, templateName, languageCode = 'pt_BR', components
 }
 
 /**
+ * Send an interactive message with Quick Reply buttons.
+ *
+ * @param {string} to - recipient phone number
+ * @param {string} bodyText - main body text
+ * @param {Array<{id: string, title: string}>} buttons - up to 13 reply buttons
+ * @returns {Promise<object>}
+ */
+async function sendInteractiveButtons(to, bodyText, buttons = []) {
+  if (!Array.isArray(buttons) || buttons.length === 0) {
+    throw new Error('sendInteractiveButtons requires at least one button');
+  }
+  if (buttons.length > 13) {
+    throw new Error(`sendInteractiveButtons: max 13 buttons (got ${buttons.length})`);
+  }
+  for (const b of buttons) {
+    if (!b.id || !b.title) {
+      throw new Error('Each button must have id and title');
+    }
+    if (b.title.length > 25) {
+      console.warn(`Button "${b.id}" title exceeds 25 chars - truncating`);
+    }
+  }
+
+  const interactive = {
+    type: 'button',
+    body: { text: bodyText },
+    action: {
+      buttons: buttons.map(b => ({
+        type: 'reply',
+        reply: {
+          id: b.id,
+          title: b.title.slice(0, 25)
+        }
+      }))
+    }
+  };
+
+  return sendWhatsAppMessage(to, interactive, 'interactive');
+}
+
+/**
  * Upload media file
  */
 async function uploadMedia(filePath, mimeType) {
@@ -176,5 +217,6 @@ module.exports = {
   sendImage,
   sendDocument,
   sendTemplate,
+  sendInteractiveButtons,
   sendMessage
 };

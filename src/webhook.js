@@ -3,6 +3,21 @@
  */
 
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
+const ENABLE_NLP_DIALOGUE = process.env.ENABLE_NLP_DIALOGUE === 'true';
+
+let nlpEngine = null;
+let sendInteractiveButtons = null;
+
+if (ENABLE_NLP_DIALOGUE) {
+  // Lazy-loaded so missing optional deps don't crash the webhook
+  try {
+    const NlpDialogueEngine = require('./nlpDialogueEngine');
+    nlpEngine = NlpDialogueEngine.getInstance();
+    ({ sendInteractiveButtons } = require('./whatsappService'));
+  } catch (err) {
+    console.warn('⚠️ NLP dialogue engine not available:', err.message);
+  }
+}
 
 /**
  * Verify webhook - GET /webhook
@@ -74,14 +89,28 @@ function handleWebhook(req, res) {
  */
 function processMessages(messages) {
   messages.forEach(message => {
-    const { from, id, timestamp, type, text, image, audio, video, document, location, contacts } = message;
+    const { from, id, timestamp, type, text, image, audio, video, document, location, contacts, interactive } = message;
 
     console.log(`📱 Message from ${from}:`, { id, timestamp, type });
 
     switch (type) {
       case 'text':
         console.log(`   Text: ${text.body}`);
-        // TODO: Add your bot logic here
+        if (ENABLE_NLP_DIALOGUE && nlpEngine && nlpEngine.initialized) {
+          respondWithNlpDialogue(from, text.body).catch(err =>
+            console.error('NLP dialogue error:', err)
+          );
+        }
+        break;
+
+      case 'interactive':
+        // Quick Reply button click
+        if (interactive?.button_reply?.id && ENABLE_NLP_DIALOGUE && nlpEngine && nlpEngine.initialized) {
+          console.log(`   Button click: ${interactive.button_reply.id} (${interactive.button_reply.title})`);
+          respondWithNlpButton(from, interactive.button_reply.id).catch(err =>
+            console.error('NLP dialogue error:', err)
+          );
+        }
         break;
 
       case 'image':
@@ -115,11 +144,39 @@ function processMessages(messages) {
       default:
         console.log(`   Unknown message type: ${type}`);
     }
-
-    // Example: Respond with echo (for testing)
-    // You would typically save to DB and respond asynchronously
-    // respondToMessage(from, `Echo: ${text?.body || '[media]'}`);
   });
+}
+
+/**
+ * Run the user utterance through the NLP dialogue engine and send the response.
+ */
+async function respondWithNlpDialogue(userId, utterance) {
+  if (!nlpEngine || !sendInteractiveButtons) return;
+  const response = await nlpEngine.processInput(userId, utterance);
+  await dispatchResponse(userId, response);
+}
+
+/**
+ * Run a button click through the NLP dialogue engine and send the response.
+ */
+async function respondWithNlpButton(userId, buttonId) {
+  if (!nlpEngine || !sendInteractiveButtons) return;
+  const response = await nlpEngine.processButton(userId, buttonId);
+  await dispatchResponse(userId, response);
+}
+
+/**
+ * Send the engine response back to WhatsApp. Falls back to plain text
+ * if there are no buttons.
+ */
+async function dispatchResponse(userId, response) {
+  if (!response) return;
+  if (response.buttons && response.buttons.length > 0) {
+    await sendInteractiveButtons(userId, response.text, response.buttons);
+  } else {
+    const { sendText } = require('./whatsappService');
+    await sendText(userId, response.text);
+  }
 }
 
 /**
