@@ -1,0 +1,9 @@
+{
+  "messaging_product": "whatsapp",
+  "to": "5511999999999",
+  "type": "text",
+  "text": {
+    "preview_url": false,
+    "body": "Olá! Esta é uma mensagem de teste via WhatsApp API."
+  }
+}

@@ -1,0 +1,180 @@
+/**
+ * WhatsApp Cloud API - Send Messages
+ */
+
+const axios = require('axios');
+
+const ACCESS_TOKEN = process.env.ACCESS_TOKEN;
+const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID;
+const API_VERSION = 'v18.0';
+const BASE_URL = `https://graph.facebook.com/${API_VERSION}`;
+
+/**
+ * Send a message to WhatsApp
+ * 
+ * @param {string|object} recipient - Phone number string or object with 'id' for responses
+ * @param {object} messageData - Message content based on type
+ * @param {string} messageType - Message type: text, image, document, audio, video, template, etc.
+ * @returns {Promise<object>} - API response
+ */
+async function sendWhatsAppMessage(recipient, messageData, messageType = 'text') {
+  if (!ACCESS_TOKEN || !PHONE_NUMBER_ID) {
+    throw new Error('ACCESS_TOKEN and PHONE_NUMBER_ID must be configured');
+  }
+
+  const url = `${BASE_URL}/${PHONE_NUMBER_ID}/messages`;
+
+  const headers = {
+    'Authorization': `Bearer ${ACCESS_TOKEN}`,
+    'Content-Type': 'application/json'
+  };
+
+  const payload = {
+    messaging_product: 'whatsapp',
+    to: recipient,
+    type: messageType,
+    [messageType]: messageData
+  };
+
+  try {
+    console.log('📤 Sending message:', JSON.stringify(payload, null, 2));
+    
+    const response = await axios.post(url, payload, { headers });
+    
+    console.log('✅ Message sent successfully:', response.data);
+    return response.data;
+
+  } catch (error) {
+    const errorMsg = error.response?.data?.error || error.message;
+    console.error('❌ Failed to send message:', errorMsg);
+    throw errorMsg;
+  }
+}
+
+/**
+ * Send text message
+ */
+async function sendText(to, text, previewUrl = false) {
+  return sendWhatsAppMessage(to, { body: text, preview_url: previewUrl }, 'text');
+}
+
+/**
+ * Send image by ID or URL
+ */
+async function sendImage(to, imageIdOrUrl, caption = null) {
+  const imageData = imageIdOrUrl.startsWith('http') 
+    ? { link: imageIdOrUrl, caption }
+    : { id: imageIdOrUrl, caption };
+  
+  return sendWhatsAppMessage(to, imageData, 'image');
+}
+
+/**
+ * Send document by ID or URL
+ */
+async function sendDocument(to, documentIdOrUrl, filename = null, caption = null) {
+  const docData = documentIdOrUrl.startsWith('http')
+    ? { link: documentIdOrUrl, filename, caption }
+    : { id: documentIdOrUrl, filename, caption };
+  
+  return sendWhatsAppMessage(to, docData, 'document');
+}
+
+/**
+ * Send template message
+ */
+async function sendTemplate(to, templateName, languageCode = 'pt_BR', components = []) {
+  return sendWhatsAppMessage(to, {
+    name: templateName,
+    language: { code: languageCode },
+    components
+  }, 'template');
+}
+
+/**
+ * Upload media file
+ */
+async function uploadMedia(filePath, mimeType) {
+  if (!ACCESS_TOKEN || !PHONE_NUMBER_ID) {
+    throw new Error('ACCESS_TOKEN and PHONE_NUMBER_ID must be configured');
+  }
+
+  const url = `${BASE_URL}/${PHONE_NUMBER_ID}/media`;
+
+  const formData = new FormData();
+  formData.append('messaging_product', 'whatsapp');
+  formData.append('file_length', fileSize);
+  formData.append('mime_type', mimeType);
+  formData.append('type', mimeType.split('/')[0]); // image, video, audio, document
+
+  // Note: For actual file upload, use FormData with the file buffer
+  // This is a simplified example
+
+  try {
+    const response = await axios.post(url, formData, {
+      headers: {
+        'Authorization': `Bearer ${ACCESS_TOKEN}`,
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+
+    console.log('📤 Media uploaded:', response.data);
+    return response.data; // { id: "MEDIA_ID" }
+
+  } catch (error) {
+    const errorMsg = error.response?.data?.error || error.message;
+    console.error('❌ Media upload failed:', errorMsg);
+    throw errorMsg;
+  }
+}
+
+/**
+ * Express route handler - POST /messages
+ */
+async function sendMessage(req, res) {
+  try {
+    const { to, type, text, image, document, template, ...rest } = req.body;
+
+    if (!to) {
+      return res.status(400).json({ error: 'Missing required field: to' });
+    }
+
+    let result;
+
+    switch (type) {
+      case 'text':
+        result = await sendText(to, text);
+        break;
+
+      case 'image':
+        result = await sendImage(to, image.id || image.link, image.caption);
+        break;
+
+      case 'document':
+        result = await sendDocument(to, document.id || document.link, document.filename, document.caption);
+        break;
+
+      case 'template':
+        result = await sendTemplate(to, template.name, template.language, template.components);
+        break;
+
+      default:
+        return res.status(400).json({ error: `Unknown message type: ${type}` });
+    }
+
+    res.status(200).json({ success: true, data: result });
+
+  } catch (error) {
+    console.error('Send message error:', error);
+    res.status(500).json({ success: false, error: error.message || error });
+  }
+}
+
+module.exports = {
+  sendWhatsAppMessage,
+  sendText,
+  sendImage,
+  sendDocument,
+  sendTemplate,
+  sendMessage
+};
