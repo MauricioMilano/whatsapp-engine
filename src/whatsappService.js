@@ -6,18 +6,20 @@ const axios = require('axios');
 
 const ACCESS_TOKEN = process.env.ACCESS_TOKEN;
 const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID;
-const API_VERSION = 'v18.0';
+const API_VERSION = 'v25.0';
 const BASE_URL = `https://graph.facebook.com/${API_VERSION}`;
 
 /**
  * Send a message to WhatsApp
- * 
+ *
  * @param {string|object} recipient - Phone number string or object with 'id' for responses
  * @param {object} messageData - Message content based on type
- * @param {string} messageType - Message type: text, image, document, audio, video, template, etc.
+ * @param {string} messageType - Message type: text, image, document, audio, video, template, interactive, etc.
+ * @param {object} [extraFields] - Optional extra top-level fields merged into the payload
+ *                                 (e.g. { recipient_type: 'individual' } for interactive messages)
  * @returns {Promise<object>} - API response
  */
-async function sendWhatsAppMessage(recipient, messageData, messageType = 'text') {
+async function sendWhatsAppMessage(recipient, messageData, messageType = 'text', extraFields = {}) {
   if (!ACCESS_TOKEN || !PHONE_NUMBER_ID) {
     throw new Error('ACCESS_TOKEN and PHONE_NUMBER_ID must be configured');
   }
@@ -33,7 +35,8 @@ async function sendWhatsAppMessage(recipient, messageData, messageType = 'text')
     messaging_product: 'whatsapp',
     to: recipient,
     type: messageType,
-    [messageType]: messageData
+    [messageType]: messageData,
+    ...extraFields
   };
 
   try {
@@ -53,9 +56,17 @@ async function sendWhatsAppMessage(recipient, messageData, messageType = 'text')
 
 /**
  * Send text message
+ *
+ * @param {string} to - recipient phone number
+ * @param {string} text - message body
+ * @param {boolean} [previewUrl=false] - enable link previews; only included in payload when true
  */
 async function sendText(to, text, previewUrl = false) {
-  return sendWhatsAppMessage(to, { body: text, preview_url: previewUrl }, 'text');
+  const textData = { body: text };
+  if (previewUrl) {
+    textData.preview_url = true;
+  }
+  return sendWhatsAppMessage(to, textData, 'text');
 }
 
 /**
@@ -97,9 +108,12 @@ async function sendTemplate(to, templateName, languageCode = 'pt_BR', components
  * @param {string} to - recipient phone number
  * @param {string} bodyText - main body text
  * @param {Array<{id: string, title: string}>} buttons - up to 13 reply buttons
+ * @param {object} [options] - optional sections
+ * @param {string} [options.header] - header text (rendered as a text header)
+ * @param {string} [options.footer] - footer text rendered below the body
  * @returns {Promise<object>}
  */
-async function sendInteractiveButtons(to, bodyText, buttons = []) {
+async function sendInteractiveButtons(to, bodyText, buttons = [], options = {}) {
   if (!Array.isArray(buttons) || buttons.length === 0) {
     throw new Error('sendInteractiveButtons requires at least one button');
   }
@@ -129,7 +143,20 @@ async function sendInteractiveButtons(to, bodyText, buttons = []) {
     }
   };
 
-  return sendWhatsAppMessage(to, interactive, 'interactive');
+  if (options.header) {
+    interactive.header = {
+      type: 'text',
+      text: options.header
+    };
+  }
+
+  if (options.footer) {
+    interactive.footer = {
+      text: options.footer
+    };
+  }
+
+  return sendWhatsAppMessage(to, interactive, 'interactive', { recipient_type: 'individual' });
 }
 
 /**
@@ -174,7 +201,7 @@ async function uploadMedia(filePath, mimeType) {
  */
 async function sendMessage(req, res) {
   try {
-    const { to, type, text, image, document, template, ...rest } = req.body;
+    const { to, type, text, image, document, template, interactive, ...rest } = req.body;
 
     if (!to) {
       return res.status(400).json({ error: 'Missing required field: to' });
@@ -197,6 +224,18 @@ async function sendMessage(req, res) {
 
       case 'template':
         result = await sendTemplate(to, template.name, template.language, template.components);
+        break;
+
+      case 'interactive':
+        result = await sendInteractiveButtons(
+          to,
+          interactive.body?.text,
+          interactive.action?.buttons || [],
+          {
+            header: interactive.header?.text,
+            footer: interactive.footer?.text
+          }
+        );
         break;
 
       default:

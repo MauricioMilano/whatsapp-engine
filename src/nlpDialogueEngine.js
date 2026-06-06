@@ -74,6 +74,7 @@ class NlpDialogueEngine {
     this._trainIntents();
     this._trainAnswers();
     await this.manager.train();
+    console.log('🧠 NLP training completed');
 
     // Initialize database tables
     const { initDatabase } = require('./contextStore');

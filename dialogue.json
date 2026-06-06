@@ -119,28 +119,22 @@
 
   "states": {
     "inicio": {
-      "on_enter": "saudacao",
-      "intent": null
+      "on_enter": "saudacao"
     },
     "main_menu": {
-      "on_enter": "mostrar_menu_principal",
-      "intent": null
+      "on_enter": "mostrar_menu_principal"
     },
     "escolhendo_bebida": {
-      "on_enter": "perguntar_bebida",
-      "intent": "escolher_bebida"
+      "on_enter": "perguntar_bebida"
     },
     "escolhendo_tamanho": {
-      "on_enter": "perguntar_tamanho",
-      "intent": "escolher_tamanho"
+      "on_enter": "perguntar_tamanho"
     },
     "escolhendo_quantidade": {
-      "on_enter": "perguntar_quantidade",
-      "intent": "escolher_quantidade"
+      "on_enter": "perguntar_quantidade"
     },
     "confirmando_pedido": {
-      "on_enter": "mostrar_resumo",
-      "intent": "confirmar"
+      "on_enter": "mostrar_resumo"
     }
   },
 
