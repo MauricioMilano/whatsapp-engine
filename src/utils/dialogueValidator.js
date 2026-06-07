@@ -7,7 +7,6 @@ const REQUIRED_TOP_LEVEL = [
   'meta',
   'context',
   'intents',
-  'states',
   'actions',
   'fallback',
   'button_handlers'
@@ -60,17 +59,20 @@ function validateDialogueSchema(dialogue) {
   // Validate intents
   errors.push(...validateIntents(dialogue.intents));
 
-  // Validate states
-  errors.push(...validateStates(dialogue.states, dialogue.actions));
-
   // Validate actions
-  errors.push(...validateActions(dialogue.actions, dialogue.states));
+  errors.push(...validateActions(dialogue.actions));
 
   // Validate fallback
   errors.push(...validateFallback(dialogue.fallback));
 
   // Validate button_handlers
   errors.push(...validateButtonHandlers(dialogue.button_handlers, dialogue.actions));
+
+  // Strict intent ↔ action validation (R1): every intent must have a
+  // matching action. Runs after the main validators so that any
+  // prerequisites (e.g., intents/actions being well-formed) are
+  // already enforced.
+  errors.push(...validateIntentActionMapping(dialogue.intents, dialogue.actions));
 
   if (errors.length > 0) {
     throw new DialogueValidationError('Dialogue validation failed', errors);
@@ -126,6 +128,17 @@ function validateEntities(entities) {
         } catch (e) {
           errors.push(`entities.${name} regex pattern is invalid: ${e.message}`);
         }
+        // R4 (regex anchoring): warn if the pattern is not anchored.
+        // The extractor runs `utterance.match(re)` without implicit
+        // anchoring, so an unanchored pattern matches inside larger
+        // strings. Authors should use `^...$` or `\b...\b`.
+        const anchored = def.pattern.startsWith('^') || def.pattern.includes('\\b');
+        if (!anchored) {
+          console.warn(
+            `⚠️  entities.${name} regex pattern is not anchored: "${def.pattern}". ` +
+            `Consider wrapping with ^...$ or using \\b word boundaries to avoid false positives.`
+          );
+        }
       }
     } else {
       errors.push(`entities.${name} has invalid type: ${def.type} (must be 'enum' or 'regex')`);
@@ -150,27 +163,39 @@ function validateIntents(intents) {
   return errors;
 }
 
-function validateStates(states, actions) {
+/**
+ * R1 strict validation: every intent name must have a matching
+ * action with at least a `response`. This was a silent runtime
+ * fallback in the previous engine — now it fails at boot.
+ *
+ * Note: actions referenced ONLY by `button_handlers` (never by an
+ * intent) are exempt. We approximate this by allowing actions that
+ * exist even if no intent maps to them.
+ */
+function validateIntentActionMapping(intents, actions) {
   const errors = [];
-  if (!states || typeof states !== 'object') {
-    return ['states must be an object'];
+  if (!Array.isArray(intents) || !actions || typeof actions !== 'object') {
+    return errors;
   }
-  for (const [name, def] of Object.entries(states)) {
-    if (!def) {
-      errors.push(`states.${name} is empty`);
+  for (const intent of intents) {
+    if (!intent || !intent.name) continue;
+    const action = actions[intent.name];
+    if (!action) {
+      errors.push(
+        `intents[${intent.name}] has no matching action: create "actions.${intent.name}" with a "response" field (R1)`
+      );
       continue;
     }
-    if (def.on_enter && !actions[def.on_enter]) {
-      errors.push(`states.${name}.on_enter references missing action: ${def.on_enter}`);
-    }
-    if (def.intent && !actions[def.intent]) {
-      errors.push(`states.${name}.intent references missing action: ${def.intent}`);
+    if (typeof action.response !== 'string') {
+      errors.push(
+        `intents[${intent.name}] matches actions.${intent.name} but that action has no "response" string`
+      );
     }
   }
   return errors;
 }
 
-function validateActions(actions, states) {
+function validateActions(actions) {
   const errors = [];
   if (!actions || typeof actions !== 'object') {
     return ['actions must be an object'];
@@ -181,9 +206,6 @@ function validateActions(actions, states) {
     }
     if (def.buttons && !Array.isArray(def.buttons)) {
       errors.push(`actions.${name}.buttons must be an array`);
-    }
-    if (def.next_state && !states[def.next_state]) {
-      errors.push(`actions.${name}.next_state references missing state: ${def.next_state}`);
     }
   }
   return errors;

@@ -3,11 +3,13 @@
 This file defines the entire conversation flow of the WhatsApp bot. It is loaded by the `NlpDialogueEngine` at startup and used to:
 
 - Train the intent classifier (node-nlp)
-- Drive the Finite State Machine (FSM)
+- Map recognized intents to actions (1:1 by name, see `docs/DIALOGUE_RULES.md`)
 - Render responses with template variables
 - Render Quick Reply buttons
 - Render the message envelope (header above the body, footer below the buttons)
-- Persist user context per state
+- Persist per-user context variables
+
+> **Note:** This bot does **not** implement a state machine. There is no `states` block, no `next_state` field on actions, and the engine does not track a current "state" between turns. Each turn is independent: the classifier picks an intent, the engine looks up the action with the same name, and returns the rendered response. The dialogue author is responsible for guiding the user through the flow via `set_variables` and template substitution. See `docs/DIALOGUE_RULES.md` for the full rule set.
 
 ## Top-Level Structure
 
@@ -17,7 +19,6 @@ This file defines the entire conversation flow of the WhatsApp bot. It is loaded
   "context":        { ... },
   "entities":       { ... },
   "intents":        [ ... ],
-  "states":         { ... },
   "actions":        { ... },
   "fallback":       { ... },
   "button_handlers":{ ... }
@@ -76,7 +77,7 @@ List of intents the classifier can recognize. Each entry is a training unit:
 
 ```json
 {
-  "name": "escolher_bebida",
+  "name": "registrar_bebida",
   "utterances": ["café", "chá", "suco"],
   "slots": {
     "bebida": { "type": "entity", "entity": "bebida" }
@@ -86,22 +87,11 @@ List of intents the classifier can recognize. Each entry is a training unit:
 
 - `utterances`: training phrases (more = better recall)
 - `slots`: entity values to extract when the intent matches
-
-### `states` (required)
-
-Flat FSM states. The engine enters the state named in `meta.default_state` (or `inicio`) on a brand-new session.
-
-```json
-"states": {
-  "inicio":     { "on_enter": "saudacao",        "intent": null },
-  "main_menu":  { "on_enter": "mostrar_menu",    "intent": null },
-  "escolhendo": { "on_enter": "perguntar_bebida","intent": "escolher_bebida" }
-}
-```
+- `name`: **must match a key in `actions` exactly** (R1 stricto, see `docs/DIALOGUE_RULES.md`)
 
 ### `actions` (required)
 
-Each action can be triggered by an intent, by a state `on_enter`, or by a button handler.
+Each action can be triggered by an intent (matched by name) or by a button handler.
 
 ```json
 "actions": {
@@ -110,18 +100,16 @@ Each action can be triggered by an intent, by a state `on_enter`, or by a button
     "header":       "☕ Café Bot",
     "footer":       "Atendimento 24h",
     "buttons":      [{ "id": "btn_menu", "title": "📋 Menu" }],
-    "set_variables":{ "etapa": "menu" },
-    "next_state":   "main_menu"
+    "set_variables":{ "etapa": "menu" }
   }
 }
 ```
 
-- `response`: text with optional `{{vars.x}}` and `{{slots.x}}` placeholders
+- `response`: text with optional `{{vars.x}}` and `{{slots.x}}` placeholders (at least one of `response` or `buttons` is required)
 - `header` (optional): text rendered above the body in interactive button messages; max 60 characters; supports `{{vars.x}}` and `{{slots.x}}` placeholders. When omitted, empty, or non-string, no header is sent.
 - `footer` (optional): text rendered below the buttons in interactive button messages; max 60 characters; supports the same placeholders as `header`. When omitted, empty, or non-string, no footer is sent.
 - `buttons`: array of `{ id, title }` (max 13, title max 25 chars)
 - `set_variables`: variables to update after the action runs
-- `next_state`: state to transition to (omit to keep current state)
 
 > **Truncation:** if a rendered header or footer exceeds 60 characters, the engine keeps the first 60 characters and logs a warning (`Header too long (N chars, max 60). Truncating.`). Authors should keep the source string short to avoid silent information loss.
 
@@ -182,11 +170,13 @@ Interactive button messages on WhatsApp support an optional `header` (text rende
   "header":    "Rendered header or null",
   "footer":    "Rendered footer or null",
   "buttons":   [{ "id": "btn1", "title": "..." }],
-  "nextState": "main_menu"
+  "nextState": null
 }
 ```
 
 `header` and `footer` are **always present** on the result. They are `null` when the corresponding action or fallback omits the field, when the field is an empty string, or when it is not a string. Plain-text (no buttons) responses ignore both fields.
+
+`nextState` is **always `null`** in the current version. The field is preserved on the result shape for backward compatibility with `webhook.js` (which reads it but does not branch on it). New code should ignore it.
 
 ### WhatsApp Payload
 
@@ -212,9 +202,10 @@ When the field is `null`, the corresponding `interactive.header` / `interactive.
 The dialogue is validated at startup. Common errors:
 
 - Missing required top-level field
-- State `on_enter` references a non-existent action
+- An intent `name` has no matching `actions[<name>]` (R1 stricto, see `docs/DIALOGUE_RULES.md`)
+- An action has no `response` (R1 stricto — pure button-only actions must still have a `response`, even if empty, to make their meaning explicit)
 - Button handler references a non-existent action
-- Regex entity has an invalid pattern
+- Regex entity has an invalid pattern, or is not anchored with `^...$` (R7 warning)
 - Action has neither `response` nor `buttons`
 
-If validation fails the engine refuses to start.
+If validation fails the engine refuses to start. The full rule set lives in [`docs/DIALOGUE_RULES.md`](./DIALOGUE_RULES.md).

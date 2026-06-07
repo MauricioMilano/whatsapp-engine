@@ -41,28 +41,22 @@ const TEST_DIALOGUE = {
   intents: [
     { name: 'saudacao', utterances: ['oi', 'olá', 'bom dia'], slots: {} },
     { name: 'fazer_pedido', utterances: ['quero pedir', 'fazer pedido'], slots: {} },
-    { name: 'escolher_bebida', utterances: ['café', 'chá', 'suco'], slots: {
+    { name: 'registrar_bebida', utterances: ['café', 'chá', 'suco'], slots: {
       bebida: { type: 'entity', entity: 'bebida' }
     } },
     { name: 'consulta_pedido', utterances: ['meu pedido', 'status pedido', 'consultar pedido'], slots: {} }
   ],
-  states: {
-    inicio: { on_enter: 'saudacao', intent: null },
-    main: { on_enter: 'fazer_pedido', intent: null }
-  },
   actions: {
     saudacao: {
       response: 'Olá!',
       header: '☕ Café Bot',
       footer: 'Atendimento 24h',
-      buttons: [{ id: 'btn1', title: 'Continuar' }],
-      next_state: 'main'
+      buttons: [{ id: 'btn1', title: 'Continuar' }]
     },
     fazer_pedido: {
       response: 'O que deseja?',
       // intentionally no header/footer
-      buttons: [{ id: 'beb_cafe', title: 'Café' }],
-      next_state: 'main'
+      buttons: [{ id: 'beb_cafe', title: 'Café' }]
     },
     registrar_bebida: { response: 'Você escolheu {{slots.bebida}}.', buttons: [] },
     consulta_pedido: {
@@ -164,5 +158,24 @@ describe('NlpDialogueEngine', () => {
     const r = await engine.processButton('user-hf-4', 'btn_consultar');
     expect(r.header).toBe('Pedido #42');
     expect(r.footer).toBe('Maria, atualize em 5min');
+  });
+
+  // --- FSM removal: nextState is always null ---
+
+  test('processInput returns nextState: null (FSM removed)', async () => {
+    const r = await engine.processInput('user-ns-1', 'oi');
+    expect(Object.prototype.hasOwnProperty.call(r, 'nextState')).toBe(true);
+    expect(r.nextState).toBeNull();
+  });
+
+  test('processButton returns nextState: null (FSM removed)', async () => {
+    const r = await engine.processButton('user-ns-2', 'beb_cafe');
+    expect(Object.prototype.hasOwnProperty.call(r, 'nextState')).toBe(true);
+    expect(r.nextState).toBeNull();
+  });
+
+  test('fallback result has nextState: null', async () => {
+    const r = await engine.processInput('user-ns-3', 'asdkjhkasd asdkjh');
+    expect(r.nextState).toBeNull();
   });
 });

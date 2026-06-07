@@ -153,19 +153,18 @@ class NlpDialogueEngine {
         }
       }
 
-      // 7. Determine next state
-      const nextState = action.next_state || null;
+      // 7. Persist new context. The FSM is gone: we pass `null` for
+      //    the legacy `state` argument so that webhook.js and tests
+      //    that read the return shape keep working unchanged.
+      await updateContext(userId, null, updatedVars);
 
-      // 8. Persist new context
-      await updateContext(userId, nextState, updatedVars);
-
-      // 9. Render response, buttons, header, and footer
+      // 8. Render response, buttons, header, and footer
       return {
         text: renderTemplate(action.response, updatedVars, slots),
         header: renderHeader(action.header, updatedVars, slots),
         footer: renderFooter(action.footer, updatedVars, slots),
         buttons: this._renderButtons(action.buttons),
-        nextState
+        nextState: null
       };
     } catch (err) {
       console.error('Error in processInput:', err.message);
@@ -204,15 +203,15 @@ class NlpDialogueEngine {
         }
       }
 
-      const nextState = action.next_state || null;
-      await updateContext(userId, nextState, updatedVars);
+      // FSM removed: pass `null` for the legacy state argument.
+      await updateContext(userId, null, updatedVars);
 
       return {
         text: renderTemplate(action.response, updatedVars, slots),
         header: renderHeader(action.header, updatedVars, slots),
         footer: renderFooter(action.footer, updatedVars, slots),
         buttons: this._renderButtons(action.buttons),
-        nextState
+        nextState: null
       };
     } catch (err) {
       console.error('Error in processButton:', err.message);

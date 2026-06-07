@@ -2,9 +2,9 @@
   "$schema": "https://whatsapp-api.example.com/dialogue-schema.json",
   "meta": {
     "name": "cafe-bot",
-    "version": "1.0.1",
+    "version": "2.0.0",
     "language": "pt-BR",
-    "description": "Bot de pedidos de cafeteria"
+    "description": "Bot de pedidos de cafeteria (pós-FSM: intent → action, sem state machine)"
   },
 
   "context": {
@@ -61,43 +61,43 @@
       "slots": {}
     },
     {
-      "name": "menu",
+      "name": "mostrar_menu_principal",
       "utterances": ["menu", "cardápio", "opções", "o que tem", "o que você tem", "ver opções"],
       "slots": {}
     },
     {
-      "name": "fazer_pedido",
-      "utterances": ["quero fazer um pedido", "fazer pedido", "pedir algo", "assim"],
+      "name": "perguntar_bebida",
+      "utterances": ["quero fazer um pedido", "fazer pedido", "pedir algo", "assim", "fazer um pedido"],
       "slots": {}
     },
     {
-      "name": "escolher_bebida",
+      "name": "registrar_bebida",
       "utterances": ["café", "cafézinho", "cha", "chá", "suco", "refrigerante"],
       "slots": {
         "bebida": { "type": "entity", "entity": "bebida" }
       }
     },
     {
-      "name": "escolher_tamanho",
+      "name": "registrar_tamanho",
       "utterances": ["pequeno", "médio", "grande", "p", "m", "g"],
       "slots": {
         "tamanho": { "type": "entity", "entity": "tamanho" }
       }
     },
     {
-      "name": "escolher_quantidade",
+      "name": "registrar_quantidade",
       "utterances": ["um", "dois", "três", "1", "2", "3", "uma", "duas"],
       "slots": {
         "quantidade": { "type": "number", "min": 1, "max": 10 }
       }
     },
     {
-      "name": "confirmar",
+      "name": "confirmar_pedido",
       "utterances": ["sim", "confirma", "ok", "yes", "confirmar", "isso mesmo"],
       "slots": {}
     },
     {
-      "name": "cancelar",
+      "name": "cancelar_pedido",
       "utterances": ["cancela", "não", "no", "desistir", "voltar", "cancelar"],
       "slots": {}
     },
@@ -117,27 +117,6 @@
     }
   ],
 
-  "states": {
-    "inicio": {
-      "on_enter": "saudacao"
-    },
-    "main_menu": {
-      "on_enter": "mostrar_menu_principal"
-    },
-    "escolhendo_bebida": {
-      "on_enter": "perguntar_bebida"
-    },
-    "escolhendo_tamanho": {
-      "on_enter": "perguntar_tamanho"
-    },
-    "escolhendo_quantidade": {
-      "on_enter": "perguntar_quantidade"
-    },
-    "confirmando_pedido": {
-      "on_enter": "mostrar_resumo"
-    }
-  },
-
   "actions": {
     "saudacao": {
       "response": "Olá! 👋 Bem-vindo ao Café Bot! Como posso ajudar?",
@@ -147,8 +126,7 @@
         { "id": "btn_menu", "title": "📋 Ver Menu" },
         { "id": "btn_pedido", "title": "🛒 Fazer Pedido" },
         { "id": "btn_ajuda", "title": "❓ Ajuda" }
-      ],
-      "next_state": "main_menu"
+      ]
     },
 
     "mostrar_menu_principal": {
@@ -156,17 +134,15 @@
       "buttons": [
         { "id": "btn_pedido", "title": "🛒 Fazer Pedido" },
         { "id": "btn_ajuda", "title": "❓ Ajuda" }
-      ],
-      "next_state": "main_menu"
+      ]
     },
 
     "mostrar_ajuda": {
-      "response": "❓ *Como posso ajudar?*\n\n• Digite ou clique em菜单 para ver nosso cardápio\n• Clique em 🛒 para fazer um pedido\n• Digite 'cancelar' a qualquer momento para voltar ao início",
+      "response": "❓ *Como posso ajudar?*\n\n• Digite ou clique em menu para ver nosso cardápio\n• Clique em 🛒 para fazer um pedido\n• Digite 'cancelar' a qualquer momento para voltar ao início",
       "buttons": [
         { "id": "btn_menu", "title": "📋 Ver Menu" },
         { "id": "btn_pedido", "title": "🛒 Fazer Pedido" }
-      ],
-      "next_state": "main_menu"
+      ]
     },
 
     "perguntar_bebida": {
@@ -176,8 +152,7 @@
         { "id": "bebida_cha", "title": "🍵 Chá" },
         { "id": "bebida_suco", "title": "🧋 Suco" },
         { "id": "bebida_refri", "title": "🥤 Refrigerante" }
-      ],
-      "next_state": "escolhendo_bebida"
+      ]
     },
 
     "registrar_bebida": {
@@ -187,8 +162,7 @@
         { "id": "tam_p", "title": "📦 Pequeno" },
         { "id": "tam_m", "title": "📦 Médio" },
         { "id": "tam_g", "title": "📦 Grande" }
-      ],
-      "next_state": "escolhendo_tamanho"
+      ]
     },
 
     "perguntar_tamanho": {
@@ -197,8 +171,7 @@
         { "id": "tam_p", "title": "📦 Pequeno" },
         { "id": "tam_m", "title": "📦 Médio" },
         { "id": "tam_g", "title": "📦 Grande" }
-      ],
-      "next_state": "escolhendo_tamanho"
+      ]
     },
 
     "registrar_tamanho": {
@@ -208,8 +181,7 @@
         { "id": "qtd_1", "title": "1️⃣ Um" },
         { "id": "qtd_2", "title": "2️⃣ Dois" },
         { "id": "qtd_3", "title": "3️⃣ Três" }
-      ],
-      "next_state": "escolhendo_quantidade"
+      ]
     },
 
     "perguntar_quantidade": {
@@ -218,8 +190,7 @@
         { "id": "qtd_1", "title": "1️⃣ Um" },
         { "id": "qtd_2", "title": "2️⃣ Dois" },
         { "id": "qtd_3", "title": "3️⃣ Três" }
-      ],
-      "next_state": "escolhendo_quantidade"
+      ]
     },
 
     "registrar_quantidade": {
@@ -228,8 +199,7 @@
       "buttons": [
         { "id": "confirm_sim", "title": "✅ Sim" },
         { "id": "confirm_nao", "title": "❌ Não" }
-      ],
-      "next_state": "confirmando_pedido"
+      ]
     },
 
     "mostrar_resumo": {
@@ -237,8 +207,7 @@
       "buttons": [
         { "id": "confirm_sim", "title": "✅ Sim" },
         { "id": "confirm_nao", "title": "❌ Não" }
-      ],
-      "next_state": "confirmando_pedido"
+      ]
     },
 
     "confirmar_pedido": {
@@ -247,8 +216,7 @@
       "buttons": [
         { "id": "btn_novo_pedido", "title": "🛒 Novo Pedido" },
         { "id": "btn_menu", "title": "📋 Menu" }
-      ],
-      "next_state": "main_menu"
+      ]
     },
 
     "cancelar_pedido": {
@@ -257,8 +225,21 @@
       "buttons": [
         { "id": "btn_menu", "title": "📋 Ver Menu" },
         { "id": "btn_pedido", "title": "🛒 Fazer Pedido" }
-      ],
-      "next_state": "main_menu"
+      ]
+    },
+
+    "fornecer_email": {
+      "response": "Anotado! Em breve entraremos em contato por email.",
+      "buttons": [
+        { "id": "btn_menu", "title": "📋 Menu" }
+      ]
+    },
+
+    "fornecer_telefone": {
+      "response": "Anotado! Em breve entraremos em contato por telefone.",
+      "buttons": [
+        { "id": "btn_menu", "title": "📋 Menu" }
+      ]
     }
   },
 
@@ -277,6 +258,7 @@
     "btn_menu": { "action": "mostrar_menu_principal" },
     "btn_pedido": { "action": "perguntar_bebida" },
     "btn_ajuda": { "action": "mostrar_ajuda" },
+    "btn_novo_pedido": { "action": "perguntar_bebida" },
     "bebida_cafe": { "action": "registrar_bebida", "slots": { "bebida": "café" } },
     "bebida_cha": { "action": "registrar_bebida", "slots": { "bebida": "chá" } },
     "bebida_suco": { "action": "registrar_bebida", "slots": { "bebida": "suco" } },

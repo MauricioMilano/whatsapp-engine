@@ -23,7 +23,11 @@ function getPool() {
 }
 
 /**
- * Create the user_contexts table if it doesn't exist
+ * Create the user_contexts table if it doesn't exist.
+ *
+ * Note: the `state` column was removed in migration 002 (see
+ * openspec/changes/remove-fsm-and-document-rules). The FSM that
+ * used it was never executed in runtime.
  */
 async function initDatabase() {
   const client = await getPool().connect();
@@ -31,7 +35,6 @@ async function initDatabase() {
     await client.query(`
       CREATE TABLE IF NOT EXISTS user_contexts (
         user_id     TEXT PRIMARY KEY,
-        state       TEXT,
         variables   JSONB NOT NULL DEFAULT '{}'::jsonb,
         created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -53,13 +56,12 @@ async function getContext(userId, defaultVariables = {}) {
   const client = await getPool().connect();
   try {
     const res = await client.query(
-      'SELECT state, variables, updated_at FROM user_contexts WHERE user_id = $1',
+      'SELECT variables, updated_at FROM user_contexts WHERE user_id = $1',
       [userId]
     );
 
     if (res.rows.length === 0) {
       return {
-        state: null,
         variables: { ...defaultVariables },
         isNew: true
       };
@@ -67,14 +69,12 @@ async function getContext(userId, defaultVariables = {}) {
 
     const row = res.rows[0];
     return {
-      state: row.state,
       variables: row.variables || { ...defaultVariables },
       isNew: false
     };
   } catch (err) {
     console.error('Error getting context:', err.message);
     return {
-      state: null,
       variables: { ...defaultVariables },
       isNew: true
     };
@@ -84,19 +84,22 @@ async function getContext(userId, defaultVariables = {}) {
 }
 
 /**
- * Insert or update user context
+ * Insert or update user context.
+ *
+ * The `state` argument is deprecated and ignored. Kept in the
+ * signature for backward compatibility with callers that still
+ * pass a state value (e.g., the dialogue engine pre-FSM removal).
  */
-async function updateContext(userId, state, variables) {
+async function updateContext(userId, _state, variables) {
   const client = await getPool().connect();
   try {
     await client.query(
-      `INSERT INTO user_contexts (user_id, state, variables, created_at, updated_at)
-       VALUES ($1, $2, $3::jsonb, NOW(), NOW())
+      `INSERT INTO user_contexts (user_id, variables, created_at, updated_at)
+       VALUES ($1, $2::jsonb, NOW(), NOW())
        ON CONFLICT (user_id) DO UPDATE SET
-         state = EXCLUDED.state,
          variables = EXCLUDED.variables,
          updated_at = NOW()`,
-      [userId, state, JSON.stringify(variables || {})]
+      [userId, JSON.stringify(variables || {})]
     );
   } catch (err) {
     console.error('Error updating context:', err.message);
