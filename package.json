@@ -7,7 +7,10 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "db:truncate": "node scripts/db-reset.js truncate",
+    "db:reset": "node scripts/db-reset.js schema",
+    "db:reset:full": "node scripts/db-reset.js full"
   },
   "dependencies": {
     "axios": "^1.6.0",

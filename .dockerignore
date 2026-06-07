@@ -13,6 +13,9 @@ coverage/
 *.test.js
 jest.config.*
 
+# Dev scripts (not needed in the runtime image)
+scripts/
+
 # OS / editor junk
 .DS_Store
 .vscode/
