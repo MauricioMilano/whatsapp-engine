@@ -246,6 +246,88 @@ Retorna: `{ "id": "MEDIA_ID" }`
 
 ---
 
+### 10. Interativa (Botões de Resposta Rápida)
+
+Mensagens interativas com até 3 botões de resposta rápida (`reply`). Quando originadas do `dialogue.json` (via `NlpDialogueEngine`), o engine já cuida do cabeçalho, corpo, rodapé e botões.
+
+#### Payload base:
+
+```json
+{
+  "messaging_product": "whatsapp",
+  "to": "5511999999999",
+  "type": "interactive",
+  "recipient_type": "individual",
+  "interactive": {
+    "type": "button",
+    "body": {
+      "text": "Como posso ajudar?"
+    },
+    "action": {
+      "buttons": [
+        { "type": "reply", "reply": { "id": "btn_menu",    "title": "📋 Menu" } },
+        { "type": "reply", "reply": { "id": "btn_pedido",  "title": "🛒 Pedido" } },
+        { "type": "reply", "reply": { "id": "btn_ajuda",   "title": "❓ Ajuda" } }
+      ]
+    }
+  }
+}
+```
+
+#### Com cabeçalho (header) e rodapé (footer) opcionais:
+
+```json
+{
+  "messaging_product": "whatsapp",
+  "to": "5511999999999",
+  "type": "interactive",
+  "recipient_type": "individual",
+  "interactive": {
+    "type": "button",
+    "header": {
+      "type": "text",
+      "text": "☕ Café Bot"
+    },
+    "body": {
+      "text": "Como posso ajudar?"
+    },
+    "footer": {
+      "text": "Atendimento 24h"
+    },
+    "action": {
+      "buttons": [
+        { "type": "reply", "reply": { "id": "btn_menu", "title": "📋 Menu" } }
+      ]
+    }
+  }
+}
+```
+
+> **Limites do WhatsApp Cloud API:**
+> - Até **3 botões** por mensagem (o engine aceita mais em `dialogue.json`, mas a API rejeita).
+> - Título de cada botão: **máx. 25 caracteres** (o engine trunca automaticamente e registra um aviso).
+> - Texto do `header.text` e `footer.text`: **máx. 60 caracteres** (o engine trunca automaticamente e registra um aviso).
+> - Quando o campo `header` ou `footer` for omitido, ele é simplesmente removido do payload — mensagens existentes que não declaravam esses campos continuam idênticas.
+
+#### Como o engine preenche esses campos:
+
+No fluxo do `dialogue.json`, basta declarar `header` e/ou `footer` na action ou no `fallback`:
+
+```json
+"actions": {
+  "saudacao": {
+    "response": "Olá! Como posso ajudar?",
+    "header":   "☕ Café Bot",
+    "footer":   "Atendimento 24h",
+    "buttons":  [{ "id": "btn_menu", "title": "📋 Menu" }]
+  }
+}
+```
+
+O `NlpDialogueEngine` substitui placeholders (`{{vars.x}}`, `{{slots.x}}`), trunca para 60 caracteres e devolve o resultado em `result.header` / `result.footer`. O `webhook.js` repassa esses campos para `whatsappService.sendInteractiveButtons`, que monta o payload acima. Para mais detalhes, veja [docs/DIALOGUE.md](./DIALOGUE.md).
+
+---
+
 ## Resposta da API
 
 ### Sucesso:

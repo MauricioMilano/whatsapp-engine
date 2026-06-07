@@ -117,8 +117,8 @@ async function sendInteractiveButtons(to, bodyText, buttons = [], options = {}) 
   if (!Array.isArray(buttons) || buttons.length === 0) {
     throw new Error('sendInteractiveButtons requires at least one button');
   }
-  if (buttons.length > 13) {
-    throw new Error(`sendInteractiveButtons: max 13 buttons (got ${buttons.length})`);
+  if (buttons.length > 3) {
+    throw new Error(`sendInteractiveButtons: max 3 buttons (got ${buttons.length})`);
   }
   for (const b of buttons) {
     if (!b.id || !b.title) {

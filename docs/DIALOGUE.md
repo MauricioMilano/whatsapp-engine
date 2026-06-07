@@ -6,6 +6,7 @@ This file defines the entire conversation flow of the WhatsApp bot. It is loaded
 - Drive the Finite State Machine (FSM)
 - Render responses with template variables
 - Render Quick Reply buttons
+- Render the message envelope (header above the body, footer below the buttons)
 - Persist user context per state
 
 ## Top-Level Structure
@@ -106,6 +107,8 @@ Each action can be triggered by an intent, by a state `on_enter`, or by a button
 "actions": {
   "saudacao": {
     "response":     "Olá! Como posso ajudar?",
+    "header":       "☕ Café Bot",
+    "footer":       "Atendimento 24h",
     "buttons":      [{ "id": "btn_menu", "title": "📋 Menu" }],
     "set_variables":{ "etapa": "menu" },
     "next_state":   "main_menu"
@@ -114,9 +117,13 @@ Each action can be triggered by an intent, by a state `on_enter`, or by a button
 ```
 
 - `response`: text with optional `{{vars.x}}` and `{{slots.x}}` placeholders
+- `header` (optional): text rendered above the body in interactive button messages; max 60 characters; supports `{{vars.x}}` and `{{slots.x}}` placeholders. When omitted, empty, or non-string, no header is sent.
+- `footer` (optional): text rendered below the buttons in interactive button messages; max 60 characters; supports the same placeholders as `header`. When omitted, empty, or non-string, no footer is sent.
 - `buttons`: array of `{ id, title }` (max 13, title max 25 chars)
 - `set_variables`: variables to update after the action runs
 - `next_state`: state to transition to (omit to keep current state)
+
+> **Truncation:** if a rendered header or footer exceeds 60 characters, the engine keeps the first 60 characters and logs a warning (`Header too long (N chars, max 60). Truncating.`). Authors should keep the source string short to avoid silent information loss.
 
 ### `fallback` (required)
 
@@ -125,9 +132,13 @@ Returned when NLP classification fails (low score or `None` intent):
 ```json
 "fallback": {
   "response": "Não entendi muito bem...",
+  "header":   "⚠️ Ops",
+  "footer":   "Tente reformular",
   "buttons":  [{ "id": "btn_menu", "title": "📋 Menu" }]
 }
 ```
+
+`header` and `footer` follow the same rules as on actions (optional, 60-char limit, placeholder substitution, omitted when absent). When the fallback is rendered as plain text (no buttons), `header` and `footer` are ignored by the messaging layer.
 
 ### `button_handlers` (required)
 
@@ -150,6 +161,51 @@ The optional `slots` field injects slot values without running entity extraction
 | `{{slots.x}}` | Slot value `x` extracted from the current utterance or button handler |
 
 Missing values are replaced by an empty string.
+
+`header` and `footer` accept the same `{{vars.x}}` / `{{slots.x}}` placeholders as `response`.
+
+## Message Envelope (Header & Footer)
+
+Interactive button messages on WhatsApp support an optional `header` (text rendered above the body) and `footer` (text rendered below the buttons). The dialogue engine threads both fields end-to-end:
+
+1. Authors declare them on an action or on `fallback` in `dialogue.json`.
+2. The engine substitutes `{{vars.x}}` / `{{slots.x}}` placeholders, clamps to 60 characters, and returns the rendered value (or `null`) on the result object.
+3. The webhook forwards them to `whatsappService.sendInteractiveButtons`, which omits the field from the WhatsApp payload when `null`.
+
+### Engine Result Shape
+
+`processInput`, `processButton`, and the fallback handler all return:
+
+```json
+{
+  "text":      "Rendered body",
+  "header":    "Rendered header or null",
+  "footer":    "Rendered footer or null",
+  "buttons":   [{ "id": "btn1", "title": "..." }],
+  "nextState": "main_menu"
+}
+```
+
+`header` and `footer` are **always present** on the result. They are `null` when the corresponding action or fallback omits the field, when the field is an empty string, or when it is not a string. Plain-text (no buttons) responses ignore both fields.
+
+### WhatsApp Payload
+
+When the engine produces a non-null `header` / `footer`, the WhatsApp interactive payload is:
+
+```json
+{
+  "type": "interactive",
+  "interactive": {
+    "type": "button",
+    "header": { "type": "text", "text": "..." },
+    "body":   { "text": "..." },
+    "footer": { "text": "..." },
+    "action": { "buttons": [ ... ] }
+  }
+}
+```
+
+When the field is `null`, the corresponding `interactive.header` / `interactive.footer` key is omitted entirely, keeping existing payloads byte-identical for actions that do not opt in.
 
 ## Validation
 

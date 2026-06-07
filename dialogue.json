@@ -2,7 +2,7 @@
   "$schema": "https://whatsapp-api.example.com/dialogue-schema.json",
   "meta": {
     "name": "cafe-bot",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "language": "pt-BR",
     "description": "Bot de pedidos de cafeteria"
   },
@@ -141,6 +141,8 @@
   "actions": {
     "saudacao": {
       "response": "Olá! 👋 Bem-vindo ao Café Bot! Como posso ajudar?",
+      "header": "☕ Café Bot",
+      "footer": "Atendimento 24h",
       "buttons": [
         { "id": "btn_menu", "title": "📋 Ver Menu" },
         { "id": "btn_pedido", "title": "🛒 Fazer Pedido" },
@@ -262,6 +264,8 @@
 
   "fallback": {
     "response": "Não entendi muito bem... 🤔\n\nTente usar os botões ou digite 'menu' para ver as opções.",
+    "header": "⚠️ Ops",
+    "footer": "Tente reformular",
     "buttons": [
       { "id": "btn_menu", "title": "📋 Ver Menu" },
       { "id": "btn_pedido", "title": "🛒 Fazer Pedido" },

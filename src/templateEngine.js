@@ -10,6 +10,8 @@
 
 const MAX_BUTTONS = 13;
 const MAX_TITLE_CHARS = 25;
+const MAX_HEADER_CHARS = 60;
+const MAX_FOOTER_CHARS = 60;
 
 const PLACEHOLDER_RE = /\{\{\s*(vars|slots)\.([a-zA-Z0-9_]+)\s*\}\}/g;
 
@@ -69,9 +71,73 @@ function renderButtons(buttons) {
     });
 }
 
+/**
+ * Internal helper that renders a header or footer field.
+ * Returns null for non-string or empty input, otherwise substitutes
+ * placeholders, clamps to the provided max, and warns on truncation.
+ *
+ * @param {string} label - "Header" or "Footer" used in the warning
+ * @param {*} text - the raw text from the dialogue
+ * @param {object} vars - context variables
+ * @param {object} slots - slot values
+ * @param {number} maxChars - maximum allowed length
+ * @returns {string|null}
+ */
+function _renderEnvelopeField(label, text, vars, slots, maxChars) {
+  if (typeof text !== 'string' || text.length === 0) {
+    return null;
+  }
+
+  const rendered = renderTemplate(text, vars, slots);
+  if (rendered.length === 0) {
+    return null;
+  }
+
+  if (rendered.length > maxChars) {
+    console.warn(
+      `${label} too long (${rendered.length} chars, max ${maxChars}). Truncating.`
+    );
+    return rendered.slice(0, maxChars);
+  }
+
+  return rendered;
+}
+
+/**
+ * Render an action or fallback header.
+ * Returns null for non-string or empty input (engine treats this as "not present").
+ * Otherwise substitutes {{vars.x}} / {{slots.x}} placeholders and clamps to
+ * MAX_HEADER_CHARS (60).
+ *
+ * @param {*} text - raw header text from the dialogue
+ * @param {object} vars - context variables
+ * @param {object} slots - slot values
+ * @returns {string|null}
+ */
+function renderHeader(text, vars = {}, slots = {}) {
+  return _renderEnvelopeField('Header', text, vars, slots, MAX_HEADER_CHARS);
+}
+
+/**
+ * Render an action or fallback footer.
+ * Same behavior as renderHeader but uses MAX_FOOTER_CHARS (60).
+ *
+ * @param {*} text - raw footer text from the dialogue
+ * @param {object} vars - context variables
+ * @param {object} slots - slot values
+ * @returns {string|null}
+ */
+function renderFooter(text, vars = {}, slots = {}) {
+  return _renderEnvelopeField('Footer', text, vars, slots, MAX_FOOTER_CHARS);
+}
+
 module.exports = {
   renderTemplate,
   renderButtons,
+  renderHeader,
+  renderFooter,
   MAX_BUTTONS,
-  MAX_TITLE_CHARS
+  MAX_TITLE_CHARS,
+  MAX_HEADER_CHARS,
+  MAX_FOOTER_CHARS
 };

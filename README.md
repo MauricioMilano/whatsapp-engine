@@ -70,15 +70,22 @@ whatsapp-api/
 ├── docs/                    # Documentação
 │   ├── CONFIG.md           # Configuração de ambiente
 │   ├── WEBHOOK.md          # Recebimento de mensagens
-│   └── SEND_MESSAGES.md    # Envio de mensagens
+│   ├── SEND_MESSAGES.md    # Envio de mensagens
+│   └── DIALOGUE.md         # Formato do dialogue.json (NLP/FSM)
 ├── examples/
 │   └── message-input.json   # Exemplo de payload para envio
 ├── src/
 │   ├── index.js             # Entry point - Express server
 │   ├── webhook.js           # Handlers GET/POST webhook
 │   ├── whatsappService.js   # Funções para enviar mensagens
+│   ├── templateEngine.js    # Renderização de templates e botões
+│   ├── nlpDialogueEngine.js # Engine NLP/FSM
+│   ├── entityExtractor.js   # Extração de entidades da mensagem
+│   ├── contextStore.js      # Persistência de contexto do usuário
 │   └── utils/
-│       └── signature.js     # Validação de assinatura Meta
+│       ├── signature.js     # Validação de assinatura Meta
+│       └── dialogueValidator.js
+├── dialogue.json            # Configuração do fluxo de conversa
 ├── .env.example             # Template de variáveis de ambiente
 ├── .gitignore
 ├── package.json

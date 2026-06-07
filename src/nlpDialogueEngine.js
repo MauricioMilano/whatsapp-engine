@@ -14,7 +14,7 @@
 const { NlpManager } = require('node-nlp');
 const { validateDialogueSchema } = require('./utils/dialogueValidator');
 const { extractAll } = require('./entityExtractor');
-const { renderTemplate } = require('./templateEngine');
+const { renderTemplate, renderHeader, renderFooter } = require('./templateEngine');
 const {
   getContext,
   updateContext,
@@ -159,9 +159,11 @@ class NlpDialogueEngine {
       // 8. Persist new context
       await updateContext(userId, nextState, updatedVars);
 
-      // 9. Render response and buttons
+      // 9. Render response, buttons, header, and footer
       return {
         text: renderTemplate(action.response, updatedVars, slots),
+        header: renderHeader(action.header, updatedVars, slots),
+        footer: renderFooter(action.footer, updatedVars, slots),
         buttons: this._renderButtons(action.buttons),
         nextState
       };
@@ -207,6 +209,8 @@ class NlpDialogueEngine {
 
       return {
         text: renderTemplate(action.response, updatedVars, slots),
+        header: renderHeader(action.header, updatedVars, slots),
+        footer: renderFooter(action.footer, updatedVars, slots),
         buttons: this._renderButtons(action.buttons),
         nextState
       };
@@ -230,8 +234,11 @@ class NlpDialogueEngine {
 
   _renderFallback(ctx) {
     const fb = this.dialogue.fallback;
+    const vars = ctx.variables || this.dialogue.context.variables;
     return {
-      text: renderTemplate(fb.response, ctx.variables || this.dialogue.context.variables, {}),
+      text: renderTemplate(fb.response, vars, {}),
+      header: renderHeader(fb.header, vars, {}),
+      footer: renderFooter(fb.footer, vars, {}),
       buttons: this._renderButtons(fb.buttons),
       nextState: null
     };

@@ -30,7 +30,7 @@ const { resetExtractor } = require('../src/entityExtractor');
 
 const TEST_DIALOGUE = {
   meta: { name: 'test-bot', version: '1.0.0', language: 'pt' },
-  context: { variables: { nome: null, pedido: null } },
+  context: { variables: { nome: 'Maria', pedido: null, pedido_id: '42' } },
   entities: {
     bebida: {
       type: 'enum',
@@ -43,21 +43,45 @@ const TEST_DIALOGUE = {
     { name: 'fazer_pedido', utterances: ['quero pedir', 'fazer pedido'], slots: {} },
     { name: 'escolher_bebida', utterances: ['café', 'chá', 'suco'], slots: {
       bebida: { type: 'entity', entity: 'bebida' }
-    } }
+    } },
+    { name: 'consulta_pedido', utterances: ['meu pedido', 'status pedido', 'consultar pedido'], slots: {} }
   ],
   states: {
     inicio: { on_enter: 'saudacao', intent: null },
     main: { on_enter: 'fazer_pedido', intent: null }
   },
   actions: {
-    saudacao: { response: 'Olá!', buttons: [{ id: 'btn1', title: 'Continuar' }], next_state: 'main' },
-    fazer_pedido: { response: 'O que deseja?', buttons: [{ id: 'beb_cafe', title: 'Café' }], next_state: 'main' },
-    registrar_bebida: { response: 'Você escolheu {{slots.bebida}}.', buttons: [] }
+    saudacao: {
+      response: 'Olá!',
+      header: '☕ Café Bot',
+      footer: 'Atendimento 24h',
+      buttons: [{ id: 'btn1', title: 'Continuar' }],
+      next_state: 'main'
+    },
+    fazer_pedido: {
+      response: 'O que deseja?',
+      // intentionally no header/footer
+      buttons: [{ id: 'beb_cafe', title: 'Café' }],
+      next_state: 'main'
+    },
+    registrar_bebida: { response: 'Você escolheu {{slots.bebida}}.', buttons: [] },
+    consulta_pedido: {
+      response: 'Pedido {{vars.pedido_id}} ativo.',
+      header: 'Pedido #{{vars.pedido_id}}',
+      footer: '{{vars.nome}}, atualize em 5min',
+      buttons: []
+    }
   },
-  fallback: { response: 'Não entendi.', buttons: [{ id: 'btn_menu', title: 'Menu' }] },
+  fallback: {
+    response: 'Não entendi.',
+    header: '⚠️ Ops',
+    footer: 'Tente reformular',
+    buttons: [{ id: 'btn_menu', title: 'Menu' }]
+  },
   button_handlers: {
     btn1: { action: 'fazer_pedido' },
-    beb_cafe: { action: 'registrar_bebida', slots: { bebida: 'café' } }
+    beb_cafe: { action: 'registrar_bebida', slots: { bebida: 'café' } },
+    btn_consultar: { action: 'consulta_pedido' }
   }
 };
 
@@ -103,5 +127,42 @@ describe('NlpDialogueEngine', () => {
   test('processButton returns fallback for unknown button id', async () => {
     const r = await engine.processButton('user-2', 'nope');
     expect(r.text).toMatch(/Não entendi/);
+  });
+
+  // --- header / footer ---
+
+  test('processInput returns header and footer populated for the action that defines them', async () => {
+    const r = await engine.processInput('user-hf-1', 'oi');
+    expect(r.header).toBe('☕ Café Bot');
+    expect(r.footer).toBe('Atendimento 24h');
+  });
+
+  test('processInput returns header: null and footer: null for the action that omits them', async () => {
+    const r = await engine.processInput('user-hf-2', 'quero pedir');
+    expect(r.header).toBeNull();
+    expect(r.footer).toBeNull();
+  });
+
+  test('processInput always returns the result shape with header and footer keys', async () => {
+    const known = await engine.processInput('user-hf-shape-1', 'oi');
+    expect(Object.prototype.hasOwnProperty.call(known, 'header')).toBe(true);
+    expect(Object.prototype.hasOwnProperty.call(known, 'footer')).toBe(true);
+
+    const fallback = await engine.processInput('user-hf-shape-2', 'asdkjhkasd asdkjh');
+    expect(Object.prototype.hasOwnProperty.call(fallback, 'header')).toBe(true);
+    expect(Object.prototype.hasOwnProperty.call(fallback, 'footer')).toBe(true);
+  });
+
+  test('_renderFallback returns the fallback header and footer when fallback is triggered', async () => {
+    const r = await engine.processInput('user-hf-3', 'asdkjhkasd asdkjh');
+    expect(r.text).toMatch(/Não entendi/);
+    expect(r.header).toBe('⚠️ Ops');
+    expect(r.footer).toBe('Tente reformular');
+  });
+
+  test('placeholder substitution resolves in header and footer (processButton path)', async () => {
+    const r = await engine.processButton('user-hf-4', 'btn_consultar');
+    expect(r.header).toBe('Pedido #42');
+    expect(r.footer).toBe('Maria, atualize em 5min');
   });
 });

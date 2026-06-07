@@ -172,7 +172,10 @@ async function respondWithNlpButton(userId, buttonId) {
 async function dispatchResponse(userId, response) {
   if (!response) return;
   if (response.buttons && response.buttons.length > 0) {
-    await sendInteractiveButtons(userId, response.text, response.buttons);
+    await sendInteractiveButtons(userId, response.text, response.buttons, {
+      header: response.header,
+      footer: response.footer
+    });
   } else {
     const { sendText } = require('./whatsappService');
     await sendText(userId, response.text);
