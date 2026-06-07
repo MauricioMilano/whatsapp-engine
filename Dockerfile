@@ -6,7 +6,7 @@ WORKDIR /app
 # Install only production deps for better layer caching
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev && npm cache clean --force
-COPY scripts/ ./scripts/
+COPY scripts/ scripts/
 # ---- Stage 2: runtime image ----
 FROM node:20-alpine AS runtime
 WORKDIR /app

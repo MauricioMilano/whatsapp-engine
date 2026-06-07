@@ -28,7 +28,7 @@ Este projeto implementa um webhook Node.js/Express para:
                           ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                     Meta Graph API                           │
-│              graph.facebook.com/v18.0/                      │
+│              graph.facebook.com/v15.0/                      │
 └─────────────────────────────────────────────────────────────┘
 ```
 
