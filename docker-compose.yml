@@ -18,5 +18,41 @@ services:
       timeout: 5s
       retries: 5
 
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: whatsapp-webhook-api:1.0.0
+    container_name: whatsapp-api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      # Point to the postgres service on the compose network.
+      # Overrides DATABASE_URL from .env so it works out-of-the-box.
+      DATABASE_URL: postgresql://botuser:botpass123@postgres:5432/whatsapp_bot
+      NODE_ENV: production
+      PORT: 3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      # Mount dialogue files read-only so you can edit them locally
+      # without rebuilding the image.
+      - ./dialogue.json:/app/dialogue.json:ro
+      - ./barber.json:/app/barber.json:ro
+      # Persist the trained node-nlp model across container restarts.
+      # node-nlp writes model.nlp next to the dialogue file after training;
+      # bind-mounting an empty file/path on the host lets the container own it.
+      - ./model.nlp:/app/model.nlp
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
 volumes:
   postgres_data:
