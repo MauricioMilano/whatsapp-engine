@@ -1,6 +1,6 @@
 # Dialogue JSON Format
 
-This file defines the entire conversation flow of the WhatsApp bot. It is loaded by the `NlpDialogueEngine` at startup and used to:
+The **active dialogue file** (selected via the `DIALOGUE_PATH` env var, default `./dialogue.json`) defines the entire conversation flow of the WhatsApp bot. The project ships with two dialogue files — `dialogue.json` (`cafe-bot`, the regression ground-truth) and `barber.json` (`dometts-barber`) — but only one is loaded per process. The active file is loaded by the `NlpDialogueEngine` at startup and used to:
 
 - Train the intent classifier (node-nlp)
 - Map recognized intents to actions (1:1 by name, see `docs/DIALOGUE_RULES.md`)

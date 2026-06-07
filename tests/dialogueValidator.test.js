@@ -3,6 +3,11 @@
  */
 
 const { validateDialogueSchema, DialogueValidationError } = require('../src/utils/dialogueValidator');
+const fs = require('fs');
+const path = require('path');
+
+const loadDialogueFile = (name) =>
+  JSON.parse(fs.readFileSync(path.join(__dirname, '..', name), 'utf-8'));
 
 const validDialogue = {
   meta: { name: 'test-bot', version: '1.0.0', language: 'pt-BR' },
@@ -126,5 +131,28 @@ describe('validateDialogueSchema', () => {
       expect.stringContaining('entities.data regex pattern is not anchored')
     );
     warnSpy.mockRestore();
+  });
+});
+
+// --- Smoke tests: real dialogue files on disk ---
+// Guards against file rot / silent schema regressions in the two dialogue
+// files shipped with the project (cafe + barber). Both are loaded and validated
+// against the same schema as the unit tests above.
+
+describe('validateDialogueSchema (real dialogue files)', () => {
+  test('loads and validates dialogue.json (cafe-bot)', () => {
+    const d = loadDialogueFile('dialogue.json');
+    expect(() => validateDialogueSchema(d)).not.toThrow();
+  });
+
+  test('loads and validates barber.json (dometts)', () => {
+    const d = loadDialogueFile('barber.json');
+    expect(() => validateDialogueSchema(d)).not.toThrow();
+  });
+
+  test('dialogue.json and barber.json have distinct meta.name', () => {
+    const cafe = loadDialogueFile('dialogue.json');
+    const barber = loadDialogueFile('barber.json');
+    expect(cafe.meta.name).not.toEqual(barber.meta.name);
   });
 });

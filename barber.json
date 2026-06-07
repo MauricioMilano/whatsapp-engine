@@ -1,0 +1,146 @@
+{
+  "$schema": "https://whatsapp-api.example.com/dialogue-schema.json",
+  "meta": {
+    "name": "dometts-barber",
+    "version": "1.0.0",
+    "language": "pt-BR",
+    "description": "Bot informacional da barbearia Dometts (sem fluxo transacional; 4 nós: saudacao, horario_atendimento, servicos, falar_barbeiro). Ative via DIALOGUE_PATH=./barber.json no .env."
+  },
+
+  "context": {
+    "variables": {
+      "nome": null,
+      "etapa": "inicio"
+    }
+  },
+
+  "entities": {},
+
+  "intents": [
+    {
+      "name": "saudacao",
+      "utterances": [
+        "oi", "olá", "ola", "hey", "bom dia", "boa tarde", "boa noite",
+        "e aí", "e ai", "tudo bem", "coe", "fala", "alô", "alo", "saudações", "salve", "cria"
+      ],
+      "slots": {}
+    },
+    {
+      "name": "horario_atendimento",
+      "utterances": [
+        "horário", "horario", "que horas", "que horas vocês abrem",
+        "que horas fecha", "funcionamento", "horário de atendimento",
+        "horário de funcionamento", "quando abre", "quando fecha",
+        "dias de atendimento", "horário de hoje", "que dia abre"
+      ],
+      "slots": {}
+    },
+    {
+      "name": "servicos",
+      "utterances": [
+        "serviços", "servicos", "preços", "precos", "valores",
+        "tabela de preços", "cardápio", "cardapio", "menu",
+        "o que vocês fazem", "corte", "barba", "sobrancelha",
+        "sombrancelha", "quanto custa", "quanto é"
+      ],
+      "slots": {}
+    },
+    {
+      "name": "falar_barbeiro",
+      "utterances": [
+        "falar com barbeiro", "atendimento humano", "atendente",
+        "pessoa real", "recepção", "recepcao", "alguém", "alguem",
+        "preciso de ajuda", "me ajuda", "suporte", "falar com alguém"
+      ],
+      "slots": {}
+    },
+    {
+      "name": "agendamento",
+      "utterances": ["agendar", "quero marcar", "marcar horário",
+                      "reservar", "quero reservar", "reservar horario", "agendamento", "agendar horário"],
+      "slots": {}
+    },
+    {
+      "name": "cortesia",
+      "utterances": ["cortesia", "cortesia do corte e barba", "cortesia do corte+barba", "cortesia do corte e barba", "cortesia do corte mais barba"],
+      "slots": {}
+    },
+      {
+        "name": "assinatura",
+        "utterances": ["assinatura", "plano mensal", "plano mensal da dometts", "assinar", "quero assinar", "quero a assinatura"],
+        "slots": {}
+      }
+  ],
+
+  "actions": {
+    "saudacao": {
+      "response": "Se deseja agendar seu atendimento acesse o link: http://trinks.com/dometts\n\nOu caso prefira apenas tirar uma dúvida, pode escolher as opções abaixo:",
+      "header": "Olá, Seja bem vindo a Dometts",
+      "footer": "Use os botões para navegar",
+      "buttons": [
+        { "id": "btn_horario", "title": "🕐 Horário" },
+        { "id": "btn_servicos", "title": "💈 Serviços" },
+        { "id": "btn_barbeiro", "title": "💬 Falar c/ barbeiro" }
+      ]
+    },
+    "agendamento": {
+      "response": "Para agendar seu atendimento, por favor acesse o link: http://trinks.com/dometts\n\nLá você poderá escolher o melhor horário e serviço para você.",
+      "header": "Agendamento",
+      "footer": "Agende online: http://trinks.com/dometts"
+    },
+    "horario_atendimento": {
+      "response": "Nosso horário de atendimento é de 8h às 19h, de terça a sábado.\n\nNão abrimos aos domingos e segundas.",
+      "header": "Horário de Atendimento",
+      "footer": "Agendamento: http://trinks.com/dometts"
+    },
+
+    "cortesia": {
+      "header": "Como funciona a cortesia",
+      "response": "Corte + Barba inclui uma cortesia: escolha entre um chopp ou um refrigerante para acompanhar seu atendimento! 🍺🥤",
+      "footer": "Agende já o seu corte:",
+      "buttons": [
+        { "id": "btn_agendamento", "title": "📅 Agendar" }
+      ]
+    },
+    "assinatura": {
+      "response": "A assinatura mensal da Dometts inclui:\n\n• 1 corte + barba por mês\n• 10% de desconto em serviços adicionais\n• Cortesia de um chopp ou refrigerante a cada visita\n\nValor: R$ 150/mês\n\nPara assinar, acesse: http://trinks.com/dometts",
+      "footer": "assine já em: http://trinks.com/dometts",
+      "header": "Assinatura Mensal"
+    },
+    "servicos": {
+      "response": "• Corte: R$ 35\n• Barba: R$ 35\n• Sobrancelha: R$ 25\n• Corte + Barba: R$ 60 (com cortesia)",
+      "header": "Serviços e Preços",
+      "footer": "Caso queira saber mais sobre a cortesia ou a assinatura:",
+      "buttons": [
+        { "id": "btn_cortesia", "title": "🎁 Cortesia" },
+        { "id": "btn_assinatura", "title": "📦 Assinatura" }
+      ]
+    },
+
+    "falar_barbeiro": {
+      "response": "Ok, vamos notificar o barbeiro e em até 2 horas você terá um retorno.\n\nAguarde um instante, por favor.",
+      "header": "Falar com o barbeiro",
+      "footer": "Agendamento: http://trinks.com/dometts"
+    }
+  },
+
+  "fallback": {
+    "response": "Não entendi muito bem 🤔\n\nPara agendar, acesse: http://trinks.com/dometts\n\nOu escolha uma das opções:",
+    "header": "⚠️ Dometts",
+    "footer": "Tente reformular",
+    "buttons": [
+      { "id": "btn_horario", "title": "🕐 Horário" },
+      { "id": "btn_servicos", "title": "💈 Serviços" },
+      { "id": "btn_barbeiro", "title": "💬 Falar c/ barbeiro" }
+    ]
+  },
+
+  "button_handlers": {
+    "btn_horario":  { "action": "horario_atendimento" },
+    "btn_servicos": { "action": "servicos" },
+    "btn_barbeiro": { "action": "falar_barbeiro" },
+    "btn_agendamento": { "action": "agendamento" },
+    "btn_cortesia": { "action": "cortesia" }, 
+    "btn_assinatura": { "action": "assinatura" }
+  }
+}

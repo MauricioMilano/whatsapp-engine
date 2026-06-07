@@ -53,7 +53,34 @@ VERIFY_TOKEN=seu_token_unico
 ACCESS_TOKEN=seu_access_token_meta
 PHONE_NUMBER_ID=seu_phone_number_id
 RECIPIENT_PHONE=55xxx
+
+# NLP dialogue (ativa o motor + seleciona qual dialogue-*.json carregar)
+ENABLE_NLP_DIALOGUE=true
+DIALOGUE_PATH=./dialogue.json
 ```
+
+## Dialogue Files
+
+O motor `NlpDialogueEngine` carrega **um único** dialogue file por vez, selecionado pela env `DIALOGUE_PATH`. O projeto shippa dois:
+
+| Arquivo | `meta.name` | Descrição |
+|---|---|---|
+| `dialogue.json` | `cafe-bot` | Fluxo transacional de pedidos de cafeteria. **Ground-truth** de regressão. |
+| `barber.json` | `dometts-barber` | Fluxo informacional da barbearia Dometts (4 nós: welcome, horário, serviços, falar com barbeiro). |
+
+Para trocar de fluxo, edite o `.env`:
+
+```env
+# Café (default)
+DIALOGUE_PATH=./dialogue.json
+
+# Barbearia Dometts
+DIALOGUE_PATH=./barber.json
+```
+
+> **Sem state machine.** O motor não rastreia `state` entre turnos. A navegação entre nós é feita inteiramente por **intent recognition** — cada nó é um intent independente, e o classificador node-nlp mapeia utterance → action 1:1 (regra R1 em [docs/DIALOGUE_RULES.md](docs/DIALOGUE_RULES.md)). Para voltar a um nó anterior, basta digitar uma palavra-chave (ex.: `"horário"`, `"menu"`, `"oi"`) — o classificador reconhece a intent e dispara a action correspondente. Não há botão "voltar" porque não é necessário.
+
+Para criar um novo fluxo: copie `dialogue.json` (ou `barber.json`) como base, edite `meta.name`/`intents`/`actions`/`button_handlers`, e troque `DIALOGUE_PATH`. O `tests/dialogueValidator.test.js` carrega ambos os arquivos do disco como smoke test contra file rot.
 
 ## Endpoints
 
@@ -85,7 +112,8 @@ whatsapp-api/
 │   └── utils/
 │       ├── signature.js     # Validação de assinatura Meta
 │       └── dialogueValidator.js
-├── dialogue.json            # Configuração do fluxo de conversa
+├── dialogue.json            # Fluxo de conversa (cafe-bot, ground-truth de regressão)
+├── barber.json              # Fluxo de conversa (barbearia Dometts)
 ├── .env.example             # Template de variáveis de ambiente
 ├── .gitignore
 ├── package.json
