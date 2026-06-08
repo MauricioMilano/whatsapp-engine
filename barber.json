@@ -288,6 +288,7 @@
     "btn_cortesia":         { "action": "cortesia" },
     "btn_assinatura":       { "action": "assinatura" },
     "btn_cortes_barbas":    { "action": "cortes_barbas_nav" },
+    "btn_combos":           { "action": "combos" },
     "btn_outros_servicos":  { "action": "outros_servicos_nav" },
     "btn_combos_basicos":   { "action": "combos_basicos" },
     "btn_combos_completos": { "action": "combos_completos" },
