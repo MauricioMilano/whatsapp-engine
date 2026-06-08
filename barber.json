@@ -253,7 +253,7 @@
       "buttons": [
         { "id": "btn_quimica", "title": "🧴 Tinta" },
         { "id": "btn_tratamentos", "title": "💧 Tratamentos" },
-        { "id": "btn_servicos",    "title": "⬅️ Voltar" }
+        { "id": "btn_acabamentos", "title": "✨ Acabamentos" }
       ]
     },
     "quimica": {
@@ -269,8 +269,7 @@
       "header": "💧 Tratamentos",
       "buttons": [
         { "id": "btn_outros_servicos", "title": "⬅️ Voltar" },
-        { "id": "btn_agendamento",     "title": "📅 Agendar" },
-        { "id": "btn_acabamentos",     "title": "✨ Acabamentos" }
+        { "id": "btn_agendamento",     "title": "📅 Agendar" }
       ]
     },
     "acabamentos": {
