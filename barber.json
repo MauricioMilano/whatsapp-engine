@@ -20,7 +20,7 @@
     {
       "name": "saudacao",
       "utterances": [
-        "oi","oii", "oiiii", "oiiiiiii", "olá", "ola", "hey", "bom dia", "boa tarde", "boa noite",
+        "oi","oii", "oiiii", "oiiiiiii", "oie", "oiee", "olá", "ola", "hey", "bom dia", "boa tarde", "boa noite",
         "e aí", "e ai", "tudo bem", "coe", "fala", "alô", "alo", "saudações", "salve", "cria"
       ],
       "slots": {}
