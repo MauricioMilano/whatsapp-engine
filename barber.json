@@ -155,7 +155,7 @@
   "actions": {
     "saudacao": {
       "response": "Se deseja agendar seu atendimento acesse o link: http://trinks.com/dometts\n\nOu caso prefira apenas tirar uma dúvida, pode escolher as opções abaixo:",
-      "header": "Olá, Seja bem vindo a Dometts",
+      "header": "👋 Olá, Seja bem vindo a Dometts",
       "footer": "Use os botões para navegar",
       "buttons": [
         { "id": "btn_horario", "title": "🕐 Horário" },
@@ -165,17 +165,17 @@
     },
     "agendamento": {
       "response": "Para agendar seu atendimento, por favor acesse o link: http://trinks.com/dometts\n\nLá você poderá escolher o melhor horário e serviço para você.",
-      "header": "Agendamento",
+      "header": "📅 Agendamento",
       "footer": "Agende online: http://trinks.com/dometts"
     },
     "horario_atendimento": {
       "response": "Nosso horário de atendimento:\n\n📅 Terça a Sexta: 09h15 às 20h\n📅 Sábado: 09h15 às 17h\n\n⚠️ Não abrimos aos domingos e segundas.",
-      "header": "Horário de Atendimento",
+      "header": "🕐 Horário de Atendimento",
       "footer": "Agendamento: http://trinks.com/dometts"
     },
     "servicos": {
       "response": "Escolha um grupo de serviços:",
-      "header": "Serviços e Preços",
+      "header": "💈 Serviços e Preços",
       "footer": "Navegue pelas categorias",
       "buttons": [
         { "id": "btn_cortes_barbas", "title": "✂️ Cortes & Barbas" },
@@ -185,7 +185,7 @@
     },
     "cortes_barbas_nav": {
       "response": "Cortes e Barbas:",
-      "header": "Cortes & Barbas",
+      "header": "✂️ Cortes & Barbas",
       "footer": "Escolha uma opção",
       "buttons": [
         { "id": "btn_cortes", "title": "✂️ Cortes" },
@@ -195,37 +195,37 @@
     },
     "cortes": {
       "response": "• Simples: R$ 35,00\n• Completo: R$ 55,00\n• Infantil: R$ 60,00",
-      "header": "Cortes"
+      "header": "✂️ Cortes"
     },
     "barbas": {
       "response": "• Simples: R$ 30,00\n• Completa: R$ 40,00\n• Barboterapia: R$ 55,00",
-      "header": "Barbas"
+      "header": "🪒 Barbas"
     },
     "combos": {
-      "response": "Escolha o nível do combo:",
-      "header": "Combos",
+      "response": "Escolha o tipo de combo:",
+      "header": "📦 Combos",
       "footer": "Navegue pelos combos",
       "buttons": [
-        { "id": "btn_combos_basicos", "title": "🥉 Básicos" },
-        { "id": "btn_combos_completos", "title": "🥈 Completos" },
-        { "id": "btn_combos_premium", "title": "🥇 Premium" }
+        { "id": "btn_combos_basicos", "title": "✂️ Corte +" },
+        { "id": "btn_combos_completos", "title": "🪒 Corte + Barba +" },
+        { "id": "btn_combos_premium", "title": "🧴 Corte + tinta" }
       ]
     },
     "combos_basicos": {
       "response": "• Corte + Sobrancelha: R$ 65,00\n• Corte + Hidratação: R$ 75,00\n• Corte + Barba: R$ 90,00",
-      "header": "Combos Básicos"
+      "header": "✂️ Corte +"
     },
     "combos_completos": {
       "response": "• Corte + Barba + Sobrancelha: R$ 100,00\n• Corte + Barboterapia: R$ 100,00",
-      "header": "Combos Completos"
+      "header": "🪒 Corte + Barba +"
     },
     "combos_premium": {
       "response": "• Corte + Coloração: R$ 135,00\n• Corte + Luzes: R$ 135,00\n• Corte + Nevou: R$ 135,00\n• Corte + Reflexo (Alinhado): R$ 135,00",
-      "header": "Combos Premium"
+      "header": "🧴 Corte + tinta"
     },
     "outros_servicos_nav": {
       "response": "Outros Serviços:",
-      "header": "Outros Serviços",
+      "header": "🧴 Outros Serviços",
       "footer": "Escolha uma opção",
       "buttons": [
         { "id": "btn_quimica", "title": "🧴 Química" },
@@ -235,22 +235,22 @@
     },
     "quimica": {
       "response": "• Coloração: R$ 80,00\n• Luzes: R$ 80,00\n• Nevou: R$ 100,00\n• Alisamento Americano: R$ 80,00",
-      "header": "Química"
+      "header": "🧴 Química"
     },
     "tratamentos": {
       "response": "• Hidratação: R$ 30,00",
-      "header": "Tratamentos"
+      "header": "💧 Tratamentos"
     },
     "acabamentos": {
       "response": "• Sobrancelha Navalha: R$ 15,00\n• Pigmentação Barba/Cabelo: R$ 15,00\n• Pézinho (Acabamento): R$ 15,00\n• Desenho: R$ 5,00",
-      "header": "Acabamentos"
+      "header": "✨ Acabamentos"
     },
     "endereco": {
       "response": "📍 Jaime Perdigão, 507 - Loja B",
-      "header": "Endereço"
+      "header": "🗺️ Endereço"
     },
     "cortesia": {
-      "header": "Como funciona a cortesia",
+      "header": "🎁 Como funciona a cortesia",
       "response": "Corte + Barba inclui uma cortesia: escolha entre um chopp ou um refrigerante para acompanhar seu atendimento! 🍺🥤",
       "footer": "Agende já o seu corte:",
       "buttons": [
@@ -260,11 +260,11 @@
     "assinatura": {
       "response": "A assinatura mensal da Dometts inclui:\n\n• 1 corte + barba por mês\n• 10% de desconto em serviços adicionais\n• Cortesia de um chopp ou refrigerante a cada visita\n\nValor: R$ 150/mês\n\nPara assinar, acesse: http://trinks.com/dometts",
       "footer": "assine já em: http://trinks.com/dometts",
-      "header": "Assinatura Mensal"
+      "header": "📦 Assinatura Mensal"
     },
     "falar_barbeiro": {
       "response": "Ok, vamos notificar o barbeiro e em até 2 horas você terá um retorno.\n\nAguarde um instante, por favor.",
-      "header": "Falar com o barbeiro",
+      "header": "💬 Falar com o barbeiro",
       "footer": "Agendamento: http://trinks.com/dometts"
     }
   },
