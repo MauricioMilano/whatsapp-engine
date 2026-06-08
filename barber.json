@@ -225,7 +225,7 @@
       "buttons": [
         { "id": "btn_cortesia",        "title": "🎁 Cortesia" },
         { "id": "btn_agendamento",    "title": "📅 Agendar" },
-        { "id": "btn_combos_premium", "title": "🧴 Corte + tinta" }
+        { "id": "btn_combos_premium", "title": "🧴 Corte + química" }
       ]
     },
     "combos_completos": {
@@ -238,7 +238,7 @@
     },
     "combos_premium": {
       "response": "• Corte + Coloração: R$ 135,00\n• Corte + Luzes: R$ 135,00\n• Corte + Nevou: R$ 135,00\n• Corte + Reflexo (Alinhado): R$ 135,00",
-      "header": "🧴 Corte + tinta",
+      "header": "🧴 Corte + Química",
       "buttons": [
         { "id": "btn_combos",     "title": "⬅️ Voltar" },
         { "id": "btn_agendamento", "title": "📅 Agendar" },
@@ -250,14 +250,14 @@
       "header": "🧴 Outros Serviços",
       "footer": "Escolha uma opção",
       "buttons": [
-        { "id": "btn_quimica", "title": "🧴 Tinta" },
+        { "id": "btn_quimica", "title": "🧴 Química" },
         { "id": "btn_tratamentos", "title": "💧 Tratamentos" },
         { "id": "btn_acabamentos", "title": "✨ Acabamentos" }
       ]
     },
     "quimica": {
       "response": "• Coloração: R$ 80,00\n• Luzes: R$ 80,00\n• Nevou: R$ 100,00\n• Alisamento Americano: R$ 80,00",
-      "header": "🧴 Tinta",
+      "header": "🧴 Química",
       "buttons": [
         { "id": "btn_outros_servicos", "title": "⬅️ Voltar" },
         { "id": "btn_agendamento",     "title": "📅 Agendar" }
