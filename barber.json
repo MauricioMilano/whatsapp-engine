@@ -271,7 +271,7 @@
 
   "fallback": {
     "response": "Não entendi muito bem 🤔\n\nPara agendar, acesse: http://trinks.com/dometts\n\nOu escolha uma das opções:",
-    "header": "⚠️ Dometts",
+    "header": "⚠️ Ops, não consegui entender",
     "footer": "Tente reformular",
     "buttons": [
       { "id": "btn_horario", "title": "🕐 Horário" },
