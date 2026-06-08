@@ -223,18 +223,17 @@
       "response": "• Corte + Sobrancelha: R$ 65,00\n• Corte + Hidratação: R$ 75,00\n• Corte + Barba: R$ 90,00",
       "header": "✂️ Corte +",
       "buttons": [
-        { "id": "btn_cortesia",   "title": "🎁 Cortesia" },
-        { "id": "btn_agendamento", "title": "📅 Agendar" },
-        { "id": "btn_servicos",   "title": "⬅️ Voltar" }
+        { "id": "btn_cortesia",        "title": "🎁 Cortesia" },
+        { "id": "btn_agendamento",    "title": "📅 Agendar" },
+        { "id": "btn_combos_premium", "title": "🧴 Corte + tinta" }
       ]
     },
     "combos_completos": {
       "response": "• Corte + Barba + Sobrancelha: R$ 100,00\n• Corte + Barboterapia: R$ 100,00",
       "header": "🪒 Corte + Barba +",
       "buttons": [
-        { "id": "btn_combos",         "title": "⬅️ Voltar" },
-        { "id": "btn_agendamento",     "title": "📅 Agendar" },
-        { "id": "btn_combos_premium",  "title": "🧴 Corte + tinta" }
+        { "id": "btn_combos",     "title": "⬅️ Voltar" },
+        { "id": "btn_agendamento", "title": "📅 Agendar" }
       ]
     },
     "combos_premium": {
@@ -300,7 +299,12 @@
     "assinatura": {
       "response": "A assinatura mensal da Dometts inclui:\n\n• 1 corte + barba por mês\n• 10% de desconto em serviços adicionais\n• Cortesia de um chopp ou refrigerante a cada visita\n\nValor: R$ 150/mês\n\nPara assinar, acesse: http://trinks.com/dometts",
       "footer": "assine já em: http://trinks.com/dometts",
-      "header": "📦 Assinatura Mensal"
+      "header": "📦 Assinatura Mensal",
+      "buttons": [
+        { "id": "btn_agendamento", "title": "📅 Agendar" },
+        { "id": "btn_combos",      "title": "📦 Combos" },
+        { "id": "btn_servicos",    "title": "💈 Serviços" }
+      ]
     },
     "falar_barbeiro": {
       "response": "Ok, vamos notificar o barbeiro e em até 2 horas você terá um retorno.\n\nAguarde um instante, por favor.",
