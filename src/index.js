@@ -41,8 +41,8 @@ app.get('/health', (req, res) => {
 app.get('/webhook', verifyWebhook);
 app.post('/webhook', handleWebhook);
 
-// Send message endpoint
-app.post('/messages', sendMessage);
+// // Send message endpoint
+// app.post('/messages', sendMessage);
 
 // Error handling
 app.use((err, req, res, next) => {

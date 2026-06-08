@@ -195,11 +195,19 @@
     },
     "cortes": {
       "response": "• Simples: R$ 35,00\n• Completo: R$ 55,00\n• Infantil: R$ 60,00",
-      "header": "✂️ Cortes"
+      "header": "✂️ Cortes",
+      "buttons": [
+        { "id": "btn_cortes_barbas", "title": "⬅️ Voltar" },
+        { "id": "btn_agendamento",   "title": "📅 Agendar" }
+      ]
     },
     "barbas": {
       "response": "• Simples: R$ 30,00\n• Completa: R$ 40,00\n• Barboterapia: R$ 55,00",
-      "header": "🪒 Barbas"
+      "header": "🪒 Barbas",
+      "buttons": [
+        { "id": "btn_cortes_barbas", "title": "⬅️ Voltar" },
+        { "id": "btn_agendamento",   "title": "📅 Agendar" }
+      ]
     },
     "combos": {
       "response": "Escolha o tipo de combo:",
@@ -208,53 +216,86 @@
       "buttons": [
         { "id": "btn_combos_basicos", "title": "✂️ Corte +" },
         { "id": "btn_combos_completos", "title": "🪒 Corte + Barba +" },
-        { "id": "btn_combos_premium", "title": "🧴 Corte + tinta" }
+        { "id": "btn_assinatura",      "title": "📦 Assinatura" }
       ]
     },
     "combos_basicos": {
       "response": "• Corte + Sobrancelha: R$ 65,00\n• Corte + Hidratação: R$ 75,00\n• Corte + Barba: R$ 90,00",
-      "header": "✂️ Corte +"
+      "header": "✂️ Corte +",
+      "buttons": [
+        { "id": "btn_cortesia",   "title": "🎁 Cortesia" },
+        { "id": "btn_agendamento", "title": "📅 Agendar" },
+        { "id": "btn_servicos",   "title": "⬅️ Voltar" }
+      ]
     },
     "combos_completos": {
       "response": "• Corte + Barba + Sobrancelha: R$ 100,00\n• Corte + Barboterapia: R$ 100,00",
-      "header": "🪒 Corte + Barba +"
+      "header": "🪒 Corte + Barba +",
+      "buttons": [
+        { "id": "btn_combos",         "title": "⬅️ Voltar" },
+        { "id": "btn_agendamento",     "title": "📅 Agendar" },
+        { "id": "btn_combos_premium",  "title": "🧴 Corte + tinta" }
+      ]
     },
     "combos_premium": {
       "response": "• Corte + Coloração: R$ 135,00\n• Corte + Luzes: R$ 135,00\n• Corte + Nevou: R$ 135,00\n• Corte + Reflexo (Alinhado): R$ 135,00",
-      "header": "🧴 Corte + tinta"
+      "header": "🧴 Corte + tinta",
+      "buttons": [
+        { "id": "btn_combos",     "title": "⬅️ Voltar" },
+        { "id": "btn_agendamento", "title": "📅 Agendar" },
+        { "id": "btn_servicos",   "title": "💈 Serviços" }
+      ]
     },
     "outros_servicos_nav": {
       "response": "Outros Serviços:",
       "header": "🧴 Outros Serviços",
       "footer": "Escolha uma opção",
       "buttons": [
-        { "id": "btn_quimica", "title": "🧴 Química" },
+        { "id": "btn_quimica", "title": "🧴 Tinta" },
         { "id": "btn_tratamentos", "title": "💧 Tratamentos" },
-        { "id": "btn_acabamentos", "title": "✨ Acabamentos" }
+        { "id": "btn_servicos",    "title": "⬅️ Voltar" }
       ]
     },
     "quimica": {
       "response": "• Coloração: R$ 80,00\n• Luzes: R$ 80,00\n• Nevou: R$ 100,00\n• Alisamento Americano: R$ 80,00",
-      "header": "🧴 Química"
+      "header": "🧴 Tinta",
+      "buttons": [
+        { "id": "btn_outros_servicos", "title": "⬅️ Voltar" },
+        { "id": "btn_agendamento",     "title": "📅 Agendar" }
+      ]
     },
     "tratamentos": {
       "response": "• Hidratação: R$ 30,00",
-      "header": "💧 Tratamentos"
+      "header": "💧 Tratamentos",
+      "buttons": [
+        { "id": "btn_outros_servicos", "title": "⬅️ Voltar" },
+        { "id": "btn_agendamento",     "title": "📅 Agendar" },
+        { "id": "btn_acabamentos",     "title": "✨ Acabamentos" }
+      ]
     },
     "acabamentos": {
       "response": "• Sobrancelha Navalha: R$ 15,00\n• Pigmentação Barba/Cabelo: R$ 15,00\n• Pézinho (Acabamento): R$ 15,00\n• Desenho: R$ 5,00",
-      "header": "✨ Acabamentos"
+      "header": "✨ Acabamentos",
+      "buttons": [
+        { "id": "btn_outros_servicos", "title": "⬅️ Voltar" },
+        { "id": "btn_agendamento",     "title": "📅 Agendar" }
+      ]
     },
     "endereco": {
       "response": "📍 Jaime Perdigão, 507 - Loja B",
-      "header": "🗺️ Endereço"
+      "header": "🗺️ Endereço",
+      "buttons": [
+        { "id": "btn_agendamento", "title": "📅 Agendar" }
+      ]
     },
     "cortesia": {
       "header": "🎁 Como funciona a cortesia",
       "response": "Corte + Barba inclui uma cortesia: escolha entre um chopp ou um refrigerante para acompanhar seu atendimento! 🍺🥤",
       "footer": "Agende já o seu corte:",
       "buttons": [
-        { "id": "btn_agendamento", "title": "📅 Agendar" }
+        { "id": "btn_agendamento", "title": "📅 Agendar" },
+        { "id": "btn_servicos",    "title": "💈 Serviços" },
+        { "id": "btn_combos",      "title": "📦 Combos" }
       ]
     },
     "assinatura": {
