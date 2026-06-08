@@ -4,7 +4,7 @@
     "name": "dometts-barber",
     "version": "1.0.0",
     "language": "pt-BR",
-    "description": "Bot informacional da barbearia Dometts (sem fluxo transacional; 4 nós: saudacao, horario_atendimento, servicos, falar_barbeiro). Ative via DIALOGUE_PATH=./barber.json no .env."
+    "description": "Bot informacional da barbearia Dometts (sem fluxo transacional; categorias: cortes, barbas, combos, quimica, tratamentos, acabamentos + saudacao, horario_atendimento, endereco, falar_barbeiro). Ative via DIALOGUE_PATH=./barber.json no .env."
   },
 
   "context": {
@@ -40,8 +40,88 @@
       "utterances": [
         "serviços", "servicos", "preços", "precos", "valores",
         "tabela de preços", "cardápio", "cardapio", "menu",
-        "o que vocês fazem", "corte", "barba", "sobrancelha",
-        "sombrancelha", "quanto custa", "quanto é"
+        "o que vocês fazem", "quanto custa", "quanto é"
+      ],
+      "slots": {}
+    },
+    {
+      "name": "cortes",
+      "utterances": [
+        "cortes", "corte simples", "corte completo", "corte infantil",
+        "cabelo", "cortar cabelo", "corte de cabelo"
+      ],
+      "slots": {}
+    },
+    {
+      "name": "barbas",
+      "utterances": [
+        "barbas", "barba simples", "barba completa", "barboterapia",
+        "barba", "fazer barba", "aparelhar barba"
+      ],
+      "slots": {}
+    },
+    {
+      "name": "combos_basicos",
+      "utterances": [
+        "combo básico", "combos basicos", "corte com sobrancelha",
+        "corte com hidratação", "corte e barba"
+      ],
+      "slots": {}
+    },
+    {
+      "name": "combos_completos",
+      "utterances": [
+        "combo completo", "combos completos", "corte barba sobrancelha",
+        "corte com barboterapia"
+      ],
+      "slots": {}
+    },
+    {
+      "name": "combos_premium",
+      "utterances": [
+        "combo premium", "combos premium", "corte com coloração",
+        "corte com luzes", "corte com nevou", "corte com reflexo"
+      ],
+      "slots": {}
+    },
+    {
+      "name": "combos",
+      "utterances": [
+        "combos", "combo", "pacotes", "pacote", "corte com barba",
+        "corte e barba", "serviço completo", "combo corte"
+      ],
+      "slots": {}
+    },
+    {
+      "name": "quimica",
+      "utterances": [
+        "química", "quimica", "coloração", "coloracao", "luzes",
+        "nevou", "alisamento", "tintura", "pintura"
+      ],
+      "slots": {}
+    },
+    {
+      "name": "tratamentos",
+      "utterances": [
+        "tratamentos", "tratamento", "hidratação", "hidratacao",
+        "cuidado capilar", "tratamento capilar"
+      ],
+      "slots": {}
+    },
+    {
+      "name": "acabamentos",
+      "utterances": [
+        "acabamentos", "acabamento", "sobrancelha navalha",
+        "pigmentação", "pigmentacao", "pezinho",
+        "desenho", "design"
+      ],
+      "slots": {}
+    },
+    {
+      "name": "endereco",
+      "utterances": [
+        "endereço", "endereco", "onde fica", "localização",
+        "localizacao", "como chegar", "mapa", "bairro"
       ],
       "slots": {}
     },
@@ -89,11 +169,86 @@
       "footer": "Agende online: http://trinks.com/dometts"
     },
     "horario_atendimento": {
-      "response": "Nosso horário de atendimento é de 8h às 19h, de terça a sábado.\n\nNão abrimos aos domingos e segundas.",
+      "response": "Nosso horário de atendimento:\n\n📅 Terça a Sexta: 09h15 às 20h\n📅 Sábado: 09h15 às 17h\n\n⚠️ Não abrimos aos domingos e segundas.",
       "header": "Horário de Atendimento",
       "footer": "Agendamento: http://trinks.com/dometts"
     },
-
+    "servicos": {
+      "response": "Escolha um grupo de serviços:",
+      "header": "Serviços e Preços",
+      "footer": "Navegue pelas categorias",
+      "buttons": [
+        { "id": "btn_cortes_barbas", "title": "✂️ Cortes & Barbas" },
+        { "id": "btn_combos", "title": "📦 Combos" },
+        { "id": "btn_outros_servicos", "title": "🧴 Outros Serviços" }
+      ]
+    },
+    "cortes_barbas_nav": {
+      "response": "Cortes e Barbas:",
+      "header": "Cortes & Barbas",
+      "footer": "Escolha uma opção",
+      "buttons": [
+        { "id": "btn_cortes", "title": "✂️ Cortes" },
+        { "id": "btn_barbas", "title": "🪒 Barbas" },
+        { "id": "btn_servicos", "title": "⬅️ Voltar" }
+      ]
+    },
+    "cortes": {
+      "response": "• Simples: R$ 35,00\n• Completo: R$ 55,00\n• Infantil: R$ 60,00",
+      "header": "Cortes"
+    },
+    "barbas": {
+      "response": "• Simples: R$ 30,00\n• Completa: R$ 40,00\n• Barboterapia: R$ 55,00",
+      "header": "Barbas"
+    },
+    "combos": {
+      "response": "Escolha o nível do combo:",
+      "header": "Combos",
+      "footer": "Navegue pelos combos",
+      "buttons": [
+        { "id": "btn_combos_basicos", "title": "🥉 Básicos" },
+        { "id": "btn_combos_completos", "title": "🥈 Completos" },
+        { "id": "btn_combos_premium", "title": "🥇 Premium" }
+      ]
+    },
+    "combos_basicos": {
+      "response": "• Corte + Sobrancelha: R$ 65,00\n• Corte + Hidratação: R$ 75,00\n• Corte + Barba: R$ 90,00",
+      "header": "Combos Básicos"
+    },
+    "combos_completos": {
+      "response": "• Corte + Barba + Sobrancelha: R$ 100,00\n• Corte + Barboterapia: R$ 100,00",
+      "header": "Combos Completos"
+    },
+    "combos_premium": {
+      "response": "• Corte + Coloração: R$ 135,00\n• Corte + Luzes: R$ 135,00\n• Corte + Nevou: R$ 135,00\n• Corte + Reflexo (Alinhado): R$ 135,00",
+      "header": "Combos Premium"
+    },
+    "outros_servicos_nav": {
+      "response": "Outros Serviços:",
+      "header": "Outros Serviços",
+      "footer": "Escolha uma opção",
+      "buttons": [
+        { "id": "btn_quimica", "title": "🧴 Química" },
+        { "id": "btn_tratamentos", "title": "💧 Tratamentos" },
+        { "id": "btn_acabamentos", "title": "✨ Acabamentos" }
+      ]
+    },
+    "quimica": {
+      "response": "• Coloração: R$ 80,00\n• Luzes: R$ 80,00\n• Nevou: R$ 100,00\n• Alisamento Americano: R$ 80,00",
+      "header": "Química"
+    },
+    "tratamentos": {
+      "response": "• Hidratação: R$ 30,00",
+      "header": "Tratamentos"
+    },
+    "acabamentos": {
+      "response": "• Sobrancelha Navalha: R$ 15,00\n• Pigmentação Barba/Cabelo: R$ 15,00\n• Pézinho (Acabamento): R$ 15,00\n• Desenho: R$ 5,00",
+      "header": "Acabamentos"
+    },
+    "endereco": {
+      "response": "📍 Jaime Perdigão, 507 - Loja B",
+      "header": "Endereço"
+    },
     "cortesia": {
       "header": "Como funciona a cortesia",
       "response": "Corte + Barba inclui uma cortesia: escolha entre um chopp ou um refrigerante para acompanhar seu atendimento! 🍺🥤",
@@ -107,16 +262,6 @@
       "footer": "assine já em: http://trinks.com/dometts",
       "header": "Assinatura Mensal"
     },
-    "servicos": {
-      "response": "• Corte: R$ 35\n• Barba: R$ 35\n• Sobrancelha: R$ 25\n• Corte + Barba: R$ 60 (com cortesia)",
-      "header": "Serviços e Preços",
-      "footer": "Caso queira saber mais sobre a cortesia ou a assinatura:",
-      "buttons": [
-        { "id": "btn_cortesia", "title": "🎁 Cortesia" },
-        { "id": "btn_assinatura", "title": "📦 Assinatura" }
-      ]
-    },
-
     "falar_barbeiro": {
       "response": "Ok, vamos notificar o barbeiro e em até 2 horas você terá um retorno.\n\nAguarde um instante, por favor.",
       "header": "Falar com o barbeiro",
@@ -136,11 +281,21 @@
   },
 
   "button_handlers": {
-    "btn_horario":  { "action": "horario_atendimento" },
-    "btn_servicos": { "action": "servicos" },
-    "btn_barbeiro": { "action": "falar_barbeiro" },
-    "btn_agendamento": { "action": "agendamento" },
-    "btn_cortesia": { "action": "cortesia" }, 
-    "btn_assinatura": { "action": "assinatura" }
+    "btn_horario":          { "action": "horario_atendimento" },
+    "btn_servicos":         { "action": "servicos" },
+    "btn_barbeiro":         { "action": "falar_barbeiro" },
+    "btn_agendamento":      { "action": "agendamento" },
+    "btn_cortesia":         { "action": "cortesia" },
+    "btn_assinatura":       { "action": "assinatura" },
+    "btn_cortes_barbas":    { "action": "cortes_barbas_nav" },
+    "btn_outros_servicos":  { "action": "outros_servicos_nav" },
+    "btn_combos_basicos":   { "action": "combos_basicos" },
+    "btn_combos_completos": { "action": "combos_completos" },
+    "btn_combos_premium":   { "action": "combos_premium" },
+    "btn_cortes":           { "action": "cortes" },
+    "btn_barbas":           { "action": "barbas" },
+    "btn_quimica":          { "action": "quimica" },
+    "btn_tratamentos":      { "action": "tratamentos" },
+    "btn_acabamentos":      { "action": "acabamentos" }
   }
 }
