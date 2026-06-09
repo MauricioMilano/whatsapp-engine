@@ -40,11 +40,9 @@ async function sendWhatsAppMessage(recipient, messageData, messageType = 'text',
   };
 
   try {
-    console.log('📤 Sending message:', JSON.stringify(payload, null, 2));
-    
     const response = await axios.post(url, payload, { headers });
-    
-    console.log('✅ Message sent successfully:', response.data);
+
+    console.log(`✅ Sent to ${recipient}`);
     return response.data;
 
   } catch (error) {
@@ -62,6 +60,8 @@ async function sendWhatsAppMessage(recipient, messageData, messageType = 'text',
  * @param {boolean} [previewUrl=false] - enable link previews; only included in payload when true
  */
 async function sendText(to, text, previewUrl = false) {
+  console.log(`📤 Out: "${text}"`);
+
   const textData = { body: text };
   if (previewUrl) {
     textData.preview_url = true;
@@ -128,6 +128,8 @@ async function sendInteractiveButtons(to, bodyText, buttons = [], options = {}) 
       console.warn(`Button "${b.id}" title exceeds 25 chars - truncating`);
     }
   }
+
+  console.log(`📤 Out: "${bodyText}" | Buttons: [${buttons.map(b => b.id).join(', ')}]`);
 
   const interactive = {
     type: 'button',

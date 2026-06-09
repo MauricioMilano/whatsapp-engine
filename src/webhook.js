@@ -52,7 +52,7 @@ function handleWebhook(req, res) {
     return res.status(404).send('Not a WhatsApp event');
   }
 
-  console.log('📩 Received webhook payload:', JSON.stringify(body, null, 2));
+  console.log('📩 Incoming webhook event');
 
   // Process each entry (usually just one)
   body.entry.forEach(entry => {
@@ -95,7 +95,7 @@ function processMessages(messages) {
 
     switch (type) {
       case 'text':
-        console.log(`   Text: ${text.body}`);
+        console.log(`📥 In: "${text.body}"`);
         if (ENABLE_NLP_DIALOGUE && nlpEngine && nlpEngine.initialized) {
           respondWithNlpDialogue(from, text.body).catch(err =>
             console.error('NLP dialogue error:', err)
@@ -106,7 +106,7 @@ function processMessages(messages) {
       case 'interactive':
         // Quick Reply button click
         if (interactive?.button_reply?.id && ENABLE_NLP_DIALOGUE && nlpEngine && nlpEngine.initialized) {
-          console.log(`   Button click: ${interactive.button_reply.id} (${interactive.button_reply.title})`);
+          console.log(`📬 Button: ${interactive.button_reply.id} | From: ${from}`);
           respondWithNlpButton(from, interactive.button_reply.id).catch(err =>
             console.error('NLP dialogue error:', err)
           );

@@ -133,8 +133,11 @@ class NlpDialogueEngine {
       const intent = result.intent;
       const score = result.score || 0;
 
+      console.log(`🧠 Intent: ${intent} | Confidence: ${score.toFixed(2)} | Utterance: "${utterance}"`);
+
       // 4. Check fallback conditions
       if (score < FALLBACK_SCORE_THRESHOLD || intent === 'None' || !this.dialogue.actions[intent]) {
+        console.log(`⚠️ Fallback triggered | Confidence: ${score.toFixed(2)} | Intent: ${intent}`);
         return this._renderFallback(ctx);
       }
 
@@ -142,6 +145,7 @@ class NlpDialogueEngine {
       const actionName = intent;
       const action = this.dialogue.actions[actionName];
       if (!action) {
+        console.log(`⚠️ Fallback triggered | Confidence: ${score.toFixed(2)} | Intent: ${intent}`);
         return this._renderFallback(ctx);
       }
 
@@ -181,6 +185,8 @@ class NlpDialogueEngine {
     this._ensureInitialized();
 
     try {
+      console.log(`📬 Button: ${buttonId} | From: ${userId}`);
+
       const handler = this.dialogue.button_handlers[buttonId];
       if (!handler) {
         const ctx = await getContext(userId, this.dialogue.context.variables);
