@@ -196,15 +196,15 @@ function processStatusUpdates(statuses) {
       failed: '❌',
       pending: '⏳'
     };
-
-    console.log(`${statusEmoji[statusType] || '❓'} Status for ${recipient_id}: ${statusType}`);
-    console.log(`   Message ID: ${id}`);
-    console.log(`   Time: ${new Date(timestamp * 1000).toISOString()}`);
-    
+    if (process.env.STATUS_LOGGING === 'verbose') {
+      console.log(`${statusEmoji[statusType] || '❓'} Status for ${recipient_id}: ${statusType}`);
+      console.log(`   Message ID: ${id}`);
+      console.log(`   Time: ${new Date(timestamp * 1000).toISOString()}`);
+    }
     if (conversation) {
       console.log(`   Conversation: ${conversation.id} (${conversation.origin.type})`);
     }
-    
+
     if (pricing) {
       console.log(`   Pricing: billable=${pricing.billable}, category=${pricing.category}`);
     }
