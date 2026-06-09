@@ -1,0 +1,73 @@
+.container {
+  padding: 0.75rem 1rem;
+  background: #1a1a2e;
+  border-top: 1px solid #333;
+}
+
+.quickButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.quickButton {
+  background: rgba(102, 126, 234, 0.2);
+  border: 1px solid #667eea;
+  color: #667eea;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  transition: background 0.15s;
+}
+
+.quickButton:hover:not(:disabled) {
+  background: rgba(102, 126, 234, 0.4);
+}
+
+.quickButton:disabled {
+  opacity: 0.5;
+}
+
+.form {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  background: #252540;
+  border: 1px solid #333;
+  border-radius: 10px;
+  color: #eaeaea;
+  font-size: 1rem;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.input::placeholder {
+  color: #666;
+}
+
+.sendButton {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: transform 0.15s, opacity 0.15s;
+}
+
+.sendButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.sendButton:disabled {
+  opacity: 0.6;
+}

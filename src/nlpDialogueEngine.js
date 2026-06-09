@@ -168,11 +168,14 @@ class NlpDialogueEngine {
         header: renderHeader(action.header, updatedVars, slots),
         footer: renderFooter(action.footer, updatedVars, slots),
         buttons: this._renderButtons(action.buttons),
-        nextState: null
+        nextState: null,
+        intent,      // Add intent to return value
+        score        // Add score to return value
       };
     } catch (err) {
       console.error('Error in processInput:', err.message);
-      return this._renderFallback({ variables: this.dialogue.context.variables });
+      const fb = this._renderFallback({ variables: this.dialogue.context.variables });
+      return { ...fb, intent: null, score: 0 };
     }
   }
 

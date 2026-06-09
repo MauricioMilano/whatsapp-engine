@@ -1,0 +1,40 @@
+.container {
+  background: #252540;
+  margin: 0.5rem 1rem;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  color: #eaeaea;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.header:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.toggle {
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+
+.json {
+  padding: 0.75rem 1rem;
+  margin: 0;
+  font-family: 'Fira Code', 'Monaco', monospace;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  overflow-x: auto;
+  color: #a8a8d0;
+  background: #1a1a2e;
+  border-top: 1px solid #333;
+}
