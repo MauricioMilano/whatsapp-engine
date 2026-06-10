@@ -9,7 +9,7 @@ RUN npm ci --omit=dev && npm cache clean --force
 # ---- Stage 2: Frontend dependencies ----
 FROM node:20-alpine AS frontend-deps
 WORKDIR /app
-COPY frontend/package.json frontend/package-lock.json ./
+COPY frontend/package.json ./
 RUN npm ci && npm cache clean --force
 
 # ---- Stage 3: Frontend build ----
