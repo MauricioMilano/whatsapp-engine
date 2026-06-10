@@ -1,22 +1,20 @@
 # syntax=docker/dockerfile:1.6
 
-# ---- Stage 1: Backend production dependencies ----
-FROM node:20-alpine AS backend-deps
+# ---- Stage 1: Base with pnpm ----
+FROM node:20-alpine AS base
+RUN npm install -g pnpm@8
+
+# ---- Stage 2: Backend production dependencies ----
+FROM base AS backend-deps
 WORKDIR /app
 COPY package.json ./
-RUN npm ci --omit=dev && npm cache clean --force
-
-# ---- Stage 2: Frontend dependencies ----
-FROM node:20-alpine AS frontend-deps
-WORKDIR /app
-COPY frontend/package.json ./
-RUN npm install -g pnpm@8 && pnpm install --frozen-lockfile
+RUN pnpm install --prod
 
 # ---- Stage 3: Frontend build ----
-FROM frontend-deps AS frontend-build
-WORKDIR /app
+FROM node:20-alpine AS frontend-build
+WORKDIR /app/frontend
 COPY frontend/ ./
-RUN pnpm run build
+RUN rm -f package-lock.json && npm install --ignore-scripts && npm rebuild rollup && npm run build
 
 # ---- Stage 4: Runtime image ----
 FROM node:20-alpine AS runtime
@@ -40,7 +38,7 @@ COPY --chown=node:node dialogue.json barber.json ./
 COPY --chown=node:node migrations/ ./migrations/
 
 # Copy built frontend (from frontend-build stage)
-COPY --from=frontend-build --chown=node:node /app/dist ./dist
+COPY --from=frontend-build --chown=node:node /app/frontend/dist ./dist
 
 # WORKDIR is created as root by Docker; chown it so the node user
 # can write runtime artifacts (e.g. the node-nlp trained model.nlp cache).
