@@ -229,6 +229,20 @@ app.post('/sim/conversations/:conversationId/button', async (req, res) => {
   }
 });
 
+// POST /sim/sessions/:userId/reset - Reset NLP context for a user
+app.post('/sim/sessions/:userId/reset', async (req, res) => {
+  try {
+    if (!nlpEngine || !nlpEngine.initialized) {
+      return res.status(503).json({ error: 'NLP engine not initialized' });
+    }
+    const result = await simulator.resetSession(req.params.userId);
+    res.json(result);
+  } catch (err) {
+    console.error('Error resetting session:', err.message);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // DELETE /sim/conversations/:conversationId - End conversation
 app.delete('/sim/conversations/:conversationId', async (req, res) => {
   try {
@@ -289,8 +303,8 @@ app.listen(PORT, async () => {
   await bootstrap();
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📡 Webhook URL: http://localhost:${PORT}/webhook`);
-  console.log(`� Debug UI: http://localhost:${PORT}/sim/api/info`);
-  console.log(`�🧠 NLP Dialogue: ${ENABLE_NLP_DIALOGUE ? 'enabled' : 'disabled'}`);
+  console.log(` Debug UI: http://localhost:${PORT}/sim/api/info`);
+  console.log(`🧠 NLP Dialogue: ${ENABLE_NLP_DIALOGUE ? 'enabled' : 'disabled'}`);
 });
 
 process.on('SIGINT', () => {

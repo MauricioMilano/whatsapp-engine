@@ -197,6 +197,7 @@
       "response": "• Simples: R$ 35,00\n• Completo: R$ 55,00\n• Infantil: R$ 60,00",
       "header": "✂️ Cortes",
       "buttons": [
+        { "id": "btn_cortesia", "title": "🎁 Cortesia" },
         { "id": "btn_cortes_barbas", "title": "⬅️ Voltar" },
         { "id": "btn_agendamento",   "title": "📅 Agendar" }
       ]
@@ -205,6 +206,8 @@
       "response": "• Simples: R$ 30,00\n• Completa: R$ 40,00\n• Barboterapia: R$ 55,00",
       "header": "🪒 Barbas",
       "buttons": [
+
+         { "id": "btn_cortesia", "title": "🎁 Cortesia" },
         { "id": "btn_cortes_barbas", "title": "⬅️ Voltar" },
         { "id": "btn_agendamento",   "title": "📅 Agendar" }
       ]

@@ -3,27 +3,21 @@ import styles from './ConversationList.module.css';
 
 export default function ConversationList({ onSelectConversation }) {
   const { state, dispatch } = useConversation();
-  const { storedConversations, dialogueInfo, isLoading, error } = state;
+  const { storedConversations, dialogueInfo, isLoadingList, error } = state;
 
   async function handleNewConversation() {
-    dispatch({ type: 'SET_LOADING', payload: true });
+    dispatch({ type: 'SET_LOADING_LIST', payload: true });
     try {
       const userId = `debug-${crypto.randomUUID().slice(0, 8)}`;
-      const { createConversation, getMessages } = await import('../api/simulator.js');
+      const { createConversation } = await import('../api/simulator.js');
       const conv = await createConversation(userId);
       dispatch({ type: 'ADD_STORED_CONVERSATION', payload: conv });
       onSelectConversation(conv.id);
     } catch (err) {
       dispatch({ type: 'SET_ERROR', payload: err.message });
     } finally {
-      dispatch({ type: 'SET_LOADING', payload: false });
+      dispatch({ type: 'SET_LOADING_LIST', payload: false });
     }
-  }
-
-  function formatTime(isoString) {
-    if (!isoString) return '';
-    const date = new Date(isoString);
-    return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
   }
 
   function timeAgo(isoString) {
@@ -50,17 +44,17 @@ export default function ConversationList({ onSelectConversation }) {
 
       {error && <div className={styles.error}>{error}</div>}
 
-      <button 
+      <button
         className={styles.newButton}
         onClick={handleNewConversation}
-        disabled={isLoading}
+        disabled={isLoadingList}
       >
-        {isLoading ? 'Criando...' : '+ Nova Conversa'}
+        {isLoadingList ? 'Criando...' : '+ Nova Conversa'}
       </button>
 
       <section className={styles.listSection}>
         <h2>Conversas Recentes</h2>
-        
+
         {storedConversations.length === 0 ? (
           <p className={styles.empty}>Nenhuma conversa ainda. Clique acima para começar!</p>
         ) : (
@@ -71,7 +65,7 @@ export default function ConversationList({ onSelectConversation }) {
                   <span className={styles.userId}>👤 {conv.userId}</span>
                   <span className={styles.time}>{timeAgo(conv.updatedAt)}</span>
                 </div>
-                <button 
+                <button
                   className={styles.openButton}
                   onClick={() => onSelectConversation(conv.conversationId)}
                 >

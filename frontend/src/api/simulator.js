@@ -78,6 +78,18 @@ export async function clickButton(conversationId, buttonId) {
 }
 
 /**
+ * Reset the NLP context (variables) for a user, keeping the
+ * conversation history intact.
+ */
+export async function resetSession(userId) {
+  const res = await fetch(`${BASE}/sessions/${encodeURIComponent(userId)}/reset`, {
+    method: 'POST'
+  });
+  if (!res.ok) throw new Error('Failed to reset session');
+  return res.json();
+}
+
+/**
  * End a conversation.
  */
 export async function endConversation(conversationId) {
