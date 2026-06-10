@@ -5,6 +5,7 @@ node_modules/
 .openspec
 openspec
 .github/
-
+.cline
+.clinerules
 dist/
 model.nlp
