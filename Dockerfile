@@ -3,7 +3,7 @@
 # ---- Stage 1: Backend production dependencies ----
 FROM node:20-alpine AS backend-deps
 WORKDIR /app
-COPY package.json package-lock.json ./
+COPY package.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 
 # ---- Stage 2: Frontend dependencies ----
