@@ -10,13 +10,13 @@ RUN npm ci --omit=dev && npm cache clean --force
 FROM node:20-alpine AS frontend-deps
 WORKDIR /app
 COPY frontend/package.json ./
-RUN npm ci && npm cache clean --force
+RUN npm install -g pnpm@8 && pnpm install --frozen-lockfile
 
 # ---- Stage 3: Frontend build ----
 FROM frontend-deps AS frontend-build
 WORKDIR /app
 COPY frontend/ ./
-RUN npm run build
+RUN pnpm run build
 
 # ---- Stage 4: Runtime image ----
 FROM node:20-alpine AS runtime
